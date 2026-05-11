@@ -62,7 +62,12 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter
+          future={{
+            v7_startTransition: false,
+            v7_relativeSplatPath: false,
+          }}
+        >
           <AuthProvider>
             <Routes>
               {/* ========================================= */}

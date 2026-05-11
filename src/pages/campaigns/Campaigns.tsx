@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useHospitalRoute } from '@/hooks/useHospitalRoute';
+import { useHospitalRoute } from '@/hooks/use-hospital-route';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ import {
   Share2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useHospitalView } from '@/contexts/HospitalViewContext';
 import CampaignShareModal from '@/components/campaigns/CampaignShareModal';

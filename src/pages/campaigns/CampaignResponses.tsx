@@ -7,7 +7,7 @@ import { ArrowLeft, Download, Search, Eye } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useHospitalRoute } from '@/hooks/useHospitalRoute';
+import { useHospitalRoute } from '@/hooks/use-hospital-route';
 import {
   Table,
   TableBody,
