@@ -507,7 +507,7 @@ export default function PublicSurvey() {
         )
       }
 
-      case 'text':
+      case 'text': {
         const inputType = question.config?.input_type || 'textarea'
 
         if (inputType === 'input') {
@@ -530,6 +530,7 @@ export default function PublicSurvey() {
             maxLength={question.config?.max_length}
           />
         )
+      }
 
       case 'rating': {
         const ratingConfig = question.config || {}
@@ -699,7 +700,7 @@ export default function PublicSurvey() {
         )
       }
 
-      case 'multiple_choice':
+      case 'multiple_choice': {
         const isMultipleChoice = question.config?.allow_multiple !== false
         const allowOther = question.config?.allow_other !== false
         // Filtro defensivo: garante que opções vazias (resíduo de edição
@@ -860,6 +861,7 @@ export default function PublicSurvey() {
             </RadioGroup>
           )
         }
+      }
 
       default:
         return (

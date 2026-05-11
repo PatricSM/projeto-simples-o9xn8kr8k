@@ -2,7 +2,7 @@
   "name": "nps-eximio-skip",
   "description": "Plataforma NPS Eximio (Skip platform + backend Supabase)",
   "private": true,
-  "version": "0.0.17",
+  "version": "0.0.16",
   "type": "module",
   "scripts": {
     "start": "vite dev",
@@ -74,6 +74,7 @@
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react-swc": "^3.7.2",
     "autoprefixer": "^10.4.21",
     "lucide-react": "^0.462.0",
     "magic-string": "^0.30.21",
