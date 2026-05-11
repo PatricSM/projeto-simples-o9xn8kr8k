@@ -126,13 +126,24 @@ export function AppSidebar({ hospitalContext }: AppSidebarProps) {
           currentPath === `/hospital/${currentHospital.slug}`
         )
       }
-      return currentPath === '/'
+      // Admin platform: dashboard raiz é /dashboard
+      if (profile?.role === 'admin_platform') {
+        return (
+          currentPath === '/dashboard' ||
+          currentPath === '/admin' ||
+          currentPath === '/admin/'
+        )
+      }
+      return currentPath === '/' || currentPath === '/dashboard'
     }
 
     // Para outras rotas, verifica se o path atual contém a rota
     if (currentHospital) {
       const fullPath = `/hospital/${currentHospital.slug}${path}`
       return currentPath.startsWith(fullPath)
+    }
+    if (profile?.role === 'admin_platform') {
+      return currentPath.startsWith(`/admin${path}`)
     }
     return currentPath.startsWith(path)
   }
@@ -148,6 +159,12 @@ export function AppSidebar({ hospitalContext }: AppSidebarProps) {
     // Se estamos em contexto de hospital específico, constrói o path completo
     if (currentHospital) {
       return buildPath(path)
+    }
+    // Admin platform: rotas estão sob /admin/* no App.tsx
+    if (profile?.role === 'admin_platform') {
+      // Dashboard fica em /dashboard (não em /admin/)
+      if (path === '/') return '/dashboard'
+      return `/admin${path}`
     }
     // Senão, usa o path direto
     return path
