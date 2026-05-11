@@ -2,7 +2,7 @@
   "name": "nps-eximio-skip",
   "description": "Plataforma NPS Eximio (Skip platform + backend Supabase)",
   "private": true,
-  "version": "0.0.25",
+  "version": "0.0.24",
   "type": "module",
   "scripts": {
     "start": "vite dev",
@@ -69,6 +69,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
