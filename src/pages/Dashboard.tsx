@@ -1,4 +1,4 @@
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,7 +6,7 @@ import { BarChart3, TrendingUp, Users, MessageSquare, Building2, Plus } from 'lu
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useHospitalRoute } from '@/hooks/useHospitalRoute';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 interface DashboardProps {
   hospitalId?: string | null;

@@ -12,7 +12,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { useHospitalRoute } from '@/hooks/useHospitalRoute';
 import {
   Sidebar,

@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface Profile {
@@ -42,25 +42,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Load user profile
-          setTimeout(async () => {
-            const { data: profileData, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .single();
-            
-            if (error) {
-              console.error('Erro ao carregar profile:', error);
-            }
-            
-            setProfile(profileData);
-          }, 0);
+          // Load user profile synchronously using promises to avoid async callback rule violation
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single()
+            .then(({ data: profileData, error }) => {
+              if (error) {
+                console.error('Erro ao carregar profile:', error);
+              }
+              setProfile(profileData);
+            });
         } else {
           setProfile(null);
         }
@@ -75,19 +73,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        setTimeout(async () => {
-          const { data: profileData, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          if (error) {
-            console.error('Erro ao carregar profile (getSession):', error);
-          }
-          
-          setProfile(profileData);
-        }, 0);
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single()
+          .then(({ data: profileData, error }) => {
+            if (error) {
+              console.error('Erro ao carregar profile (getSession):', error);
+            }
+            setProfile(profileData);
+          });
       }
       
       setLoading(false);
