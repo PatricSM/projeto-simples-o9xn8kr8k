@@ -1,28 +1,39 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Layers } from 'lucide-react';
-import { Section } from './SectionManager';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Plus, Layers } from 'lucide-react'
+import { Section } from './SectionManager'
 
 interface QuickSectionCreatorProps {
-  onCreateSection: (title: string) => string; // Returns the created section ID
-  sections: Section[];
+  onCreateSection: (title: string) => string // Returns the created section ID
+  sections: Section[]
 }
 
-export default function QuickSectionCreator({ onCreateSection, sections }: QuickSectionCreatorProps) {
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState('');
+export default function QuickSectionCreator({
+  onCreateSection,
+  sections,
+}: QuickSectionCreatorProps) {
+  const [open, setOpen] = useState(false)
+  const [title, setTitle] = useState('')
 
   const handleCreate = () => {
-    if (!title.trim()) return;
-    
-    const sectionId = onCreateSection(title.trim());
-    setTitle('');
-    setOpen(false);
-    return sectionId;
-  };
+    if (!title.trim()) return
+
+    const sectionId = onCreateSection(title.trim())
+    setTitle('')
+    setOpen(false)
+    return sectionId
+  }
 
   const suggestedSections = [
     'Informações Pessoais',
@@ -31,14 +42,16 @@ export default function QuickSectionCreator({ onCreateSection, sections }: Quick
     'Infraestrutura e Ambiente',
     'Sugestões e Melhorias',
     'Recomendação',
-  ];
+  ]
 
   const availableSuggestions = suggestedSections.filter(
-    suggestion => !sections.some(section => 
-      section.title.toLowerCase().includes(suggestion.toLowerCase()) ||
-      suggestion.toLowerCase().includes(section.title.toLowerCase())
-    )
-  );
+    (suggestion) =>
+      !sections.some(
+        (section) =>
+          section.title.toLowerCase().includes(suggestion.toLowerCase()) ||
+          suggestion.toLowerCase().includes(section.title.toLowerCase()),
+      ),
+  )
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -58,7 +71,7 @@ export default function QuickSectionCreator({ onCreateSection, sections }: Quick
             Crie uma nova seção para organizar suas perguntas de forma mais eficiente.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           <div>
             <Label htmlFor="section-title">Nome da Seção</Label>
@@ -103,5 +116,5 @@ export default function QuickSectionCreator({ onCreateSection, sections }: Quick
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -1,96 +1,103 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, GripVertical, ArrowRight, Layers, ChevronDown, ChevronUp, Edit2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import QuickSectionCreator from './QuickSectionCreator';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import {
+  Plus,
+  Trash2,
+  GripVertical,
+  ArrowRight,
+  Layers,
+  ChevronDown,
+  ChevronUp,
+  Edit2,
+} from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import QuickSectionCreator from './QuickSectionCreator'
 
 export interface Section {
-  id: string;
-  title: string;
-  description?: string;
-  order_index: number;
+  id: string
+  title: string
+  description?: string
+  order_index: number
 }
 
 interface SectionManagerProps {
-  sections: Section[];
-  onUpdate: (sections: Section[]) => void;
+  sections: Section[]
+  onUpdate: (sections: Section[]) => void
 }
 
 export default function SectionManager({ sections, onUpdate }: SectionManagerProps) {
-  const [newSectionTitle, setNewSectionTitle] = useState('');
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
-  const [editingSections, setEditingSections] = useState<Set<string>>(new Set());
+  const [newSectionTitle, setNewSectionTitle] = useState('')
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
+  const [editingSections, setEditingSections] = useState<Set<string>>(new Set())
 
   const toggleCollapse = (sectionId: string) => {
-    const newCollapsed = new Set(collapsedSections);
+    const newCollapsed = new Set(collapsedSections)
     if (newCollapsed.has(sectionId)) {
-      newCollapsed.delete(sectionId);
+      newCollapsed.delete(sectionId)
     } else {
-      newCollapsed.add(sectionId);
+      newCollapsed.add(sectionId)
     }
-    setCollapsedSections(newCollapsed);
-  };
+    setCollapsedSections(newCollapsed)
+  }
 
   const toggleEdit = (sectionId: string) => {
-    const newEditing = new Set(editingSections);
+    const newEditing = new Set(editingSections)
     if (newEditing.has(sectionId)) {
-      newEditing.delete(sectionId);
+      newEditing.delete(sectionId)
     } else {
-      newEditing.add(sectionId);
+      newEditing.add(sectionId)
     }
-    setEditingSections(newEditing);
-  };
+    setEditingSections(newEditing)
+  }
 
   const addSection = (title?: string) => {
-    const sectionTitle = title || newSectionTitle.trim();
-    if (!sectionTitle) return '';
+    const sectionTitle = title || newSectionTitle.trim()
+    if (!sectionTitle) return ''
 
     const newSection: Section = {
       id: `section-${Date.now()}`,
       title: sectionTitle,
       order_index: sections.length,
-    };
+    }
 
-    onUpdate([...sections, newSection]);
-    setNewSectionTitle('');
-    return newSection.id;
-  };
+    onUpdate([...sections, newSection])
+    setNewSectionTitle('')
+    return newSection.id
+  }
 
   const updateSection = (id: string, updates: Partial<Section>) => {
-    onUpdate(sections.map(section => 
-      section.id === id ? { ...section, ...updates } : section
-    ));
-  };
+    onUpdate(sections.map((section) => (section.id === id ? { ...section, ...updates } : section)))
+  }
 
   const removeSection = (id: string) => {
-    onUpdate(sections.filter(section => section.id !== id));
-  };
+    onUpdate(sections.filter((section) => section.id !== id))
+  }
 
   const moveSection = (id: string, direction: 'up' | 'down') => {
-    const currentIndex = sections.findIndex(s => s.id === id);
-    if (currentIndex === -1) return;
+    const currentIndex = sections.findIndex((s) => s.id === id)
+    if (currentIndex === -1) return
 
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex < 0 || newIndex >= sections.length) return;
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    if (newIndex < 0 || newIndex >= sections.length) return
 
-    const newSections = [...sections];
-    const [movedSection] = newSections.splice(currentIndex, 1);
-    newSections.splice(newIndex, 0, movedSection);
+    const newSections = [...sections]
+    const [movedSection] = newSections.splice(currentIndex, 1)
+    newSections.splice(newIndex, 0, movedSection)
 
     // Update order_index for all sections
     const updatedSections = newSections.map((section, index) => ({
       ...section,
-      order_index: index
-    }));
+      order_index: index,
+    }))
 
-    onUpdate(updatedSections);
-  };
+    onUpdate(updatedSections)
+  }
 
   return (
     <Card>
@@ -100,8 +107,8 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
           Seções do Formulário
         </CardTitle>
         <CardDescription>
-          Organize seu formulário em seções para uma melhor experiência do usuário.
-          As perguntas serão agrupadas por seção e podem ter fluxos condicionais.
+          Organize seu formulário em seções para uma melhor experiência do usuário. As perguntas
+          serão agrupadas por seção e podem ter fluxos condicionais.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -117,16 +124,15 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
             <Plus className="h-4 w-4 mr-2" />
             Adicionar
           </Button>
-          <QuickSectionCreator 
-            onCreateSection={(title) => addSection(title)}
-            sections={sections}
-          />
+          <QuickSectionCreator onCreateSection={(title) => addSection(title)} sections={sections} />
         </div>
 
         {sections.length === 0 ? (
           <div className="text-center py-6 text-muted-foreground">
             <p>Nenhuma seção criada ainda.</p>
-            <p className="text-sm">As perguntas ficarão em uma única página sem seções específicas.</p>
+            <p className="text-sm">
+              As perguntas ficarão em uma única página sem seções específicas.
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -134,7 +140,7 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
             <div className="text-sm text-muted-foreground mb-2">
               As seções aparecerão nesta ordem no formulário:
             </div>
-            
+
             {sections
               .sort((a, b) => a.order_index - b.order_index)
               .map((section, index) => (
@@ -151,9 +157,7 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
                                 <ChevronUp className="h-4 w-4 text-muted-foreground" />
                               )}
                               <GripVertical className="h-4 w-4 text-muted-foreground" />
-                              <Badge variant="outline">
-                                Seção {index + 1}
-                              </Badge>
+                              <Badge variant="outline">Seção {index + 1}</Badge>
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{section.title}</span>
@@ -164,7 +168,7 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
                               )}
                             </div>
                           </div>
-                          
+
                           <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                             <Button
                               type="button"
@@ -217,7 +221,9 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
                               <Label className="text-sm">Título da Seção *</Label>
                               <Input
                                 value={section.title}
-                                onChange={(e) => updateSection(section.id, { title: e.target.value })}
+                                onChange={(e) =>
+                                  updateSection(section.id, { title: e.target.value })
+                                }
                                 placeholder="Ex: Informações Pessoais"
                               />
                             </div>
@@ -225,18 +231,16 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
                               <Label className="text-sm">Descrição</Label>
                               <Textarea
                                 value={section.description || ''}
-                                onChange={(e) => updateSection(section.id, { description: e.target.value })}
+                                onChange={(e) =>
+                                  updateSection(section.id, { description: e.target.value })
+                                }
                                 placeholder="Descrição opcional da seção"
                                 className="min-h-[38px]"
                               />
                             </div>
                           </div>
                           <div className="mt-3 flex justify-end">
-                            <Button
-                              type="button"
-                              size="sm"
-                              onClick={() => toggleEdit(section.id)}
-                            >
+                            <Button type="button" size="sm" onClick={() => toggleEdit(section.id)}>
                               Concluir Edição
                             </Button>
                           </div>
@@ -261,14 +265,16 @@ export default function SectionManager({ sections, onUpdate }: SectionManagerPro
             <p className="text-sm text-blue-800">
               💡 <strong>Dicas para usar seções:</strong>
             </p>
-             <ul className="text-xs text-blue-700 space-y-1 ml-4">
-               <li>• Todas as perguntas devem ser associadas a uma seção</li>
-               <li>• Use lógica condicional em perguntas de múltipla escolha para pular entre seções</li>
-               <li>• Seções ajudam a organizar formulários longos e melhoram a experiência</li>
-             </ul>
+            <ul className="text-xs text-blue-700 space-y-1 ml-4">
+              <li>• Todas as perguntas devem ser associadas a uma seção</li>
+              <li>
+                • Use lógica condicional em perguntas de múltipla escolha para pular entre seções
+              </li>
+              <li>• Seções ajudam a organizar formulários longos e melhoram a experiência</li>
+            </ul>
           </div>
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

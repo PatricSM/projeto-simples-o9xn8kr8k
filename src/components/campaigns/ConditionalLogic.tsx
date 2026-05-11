@@ -1,46 +1,50 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, GitBranch } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { ConditionalRule } from './QuestionBuilder';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
+import { Plus, Trash2, GitBranch } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { ConditionalRule } from './QuestionBuilder'
 
 interface ConditionalLogicProps {
-  options: string[];
-  sections: Array<{ id: string; title: string; order_index: number }>;
-  rules: ConditionalRule[];
-  onUpdate: (rules: ConditionalRule[]) => void;
+  options: string[]
+  sections: Array<{ id: string; title: string; order_index: number }>
+  rules: ConditionalRule[]
+  onUpdate: (rules: ConditionalRule[]) => void
 }
 
-export default function ConditionalLogic({ 
-  options, 
-  sections, 
-  rules, 
-  onUpdate 
+export default function ConditionalLogic({
+  options,
+  sections,
+  rules,
+  onUpdate,
 }: ConditionalLogicProps) {
   const addRule = () => {
     const newRule: ConditionalRule = {
       option_value: '',
       target_section_id: '',
       action: 'go_to_section',
-    };
-    onUpdate([...rules, newRule]);
-  };
+    }
+    onUpdate([...rules, newRule])
+  }
 
   const updateRule = (index: number, updates: Partial<ConditionalRule>) => {
-    const newRules = rules.map((rule, i) => 
-      i === index ? { ...rule, ...updates } : rule
-    );
-    onUpdate(newRules);
-  };
+    const newRules = rules.map((rule, i) => (i === index ? { ...rule, ...updates } : rule))
+    onUpdate(newRules)
+  }
 
   const removeRule = (index: number) => {
-    onUpdate(rules.filter((_, i) => i !== index));
-  };
+    onUpdate(rules.filter((_, i) => i !== index))
+  }
 
   return (
     <Card className="border-orange-200 bg-orange-50/20">
@@ -146,7 +150,7 @@ export default function ConditionalLogic({
             ))}
 
             <Separator />
-            
+
             <Button type="button" variant="outline" size="sm" onClick={addRule}>
               <Plus className="h-4 w-4 mr-2" />
               Adicionar Regra
@@ -159,5 +163,5 @@ export default function ConditionalLogic({
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

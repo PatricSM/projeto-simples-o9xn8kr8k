@@ -1,19 +1,19 @@
-import { 
-  BarChart3, 
-  Building2, 
-  Megaphone, 
-  Heart, 
-  Home, 
-  MessageSquare, 
-  Settings, 
+import {
+  BarChart3,
+  Building2,
+  Megaphone,
+  Heart,
+  Home,
+  MessageSquare,
+  Settings,
   Users,
   LogOut,
   User,
-  ArrowLeft
-} from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/use-auth';
-import { useHospitalRoute } from '@/hooks/use-hospital-route';
+  ArrowLeft,
+} from 'lucide-react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { useAuth } from '@/hooks/use-auth'
+import { useHospitalRoute } from '@/hooks/use-hospital-route'
 import {
   Sidebar,
   SidebarContent,
@@ -26,23 +26,23 @@ import {
   SidebarHeader,
   SidebarFooter,
   useSidebar,
-} from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+} from '@/components/ui/sidebar'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu'
 
 interface AppSidebarProps {
   hospitalContext?: {
-    hospitalId: string;
-    hospitalName: string;
-    onBackToPlatform: () => void;
-  } | null;
+    hospitalId: string
+    hospitalName: string
+    onBackToPlatform: () => void
+  } | null
 }
 
 // Menu items para diferentes tipos de usuário
@@ -52,7 +52,7 @@ const platformAdminItems = [
   { title: 'Usuários', url: '/users', icon: Users },
   { title: 'Analytics', url: '/analytics', icon: BarChart3 },
   { title: 'Configurações', url: '/settings', icon: Settings },
-];
+]
 
 const hospitalItems = [
   { title: 'Dashboard', url: '/', icon: Home },
@@ -61,7 +61,7 @@ const hospitalItems = [
   { title: 'Analytics', url: '/analytics', icon: BarChart3 },
   { title: 'Equipe', url: '/team', icon: Users },
   { title: 'Configurações', url: '/settings', icon: Settings },
-];
+]
 
 // Menu items para quando está visualizando um hospital específico
 const hospitalViewItems = [
@@ -71,92 +71,99 @@ const hospitalViewItems = [
   { title: 'Analytics', url: '/analytics', icon: BarChart3 },
   { title: 'Equipe', url: '/team', icon: Users },
   { title: 'Configurações', url: '/settings', icon: Settings },
-];
+]
 
 export function AppSidebar({ hospitalContext }: AppSidebarProps) {
-  const { state } = useSidebar();
-  const { profile, signOut } = useAuth();
-  const location = useLocation();
-  const { buildPath, currentHospital } = useHospitalRoute();
-  const collapsed = state === 'collapsed';
+  const { state } = useSidebar()
+  const { profile, signOut } = useAuth()
+  const location = useLocation()
+  const { buildPath, currentHospital } = useHospitalRoute()
+  const collapsed = state === 'collapsed'
 
   const getMenuItems = () => {
     // Se estamos em rota específica do hospital, usa o menu do hospital
     if (currentHospital || hospitalContext) {
-      return hospitalViewItems;
+      return hospitalViewItems
     }
-    
+
     // Senão, usa o menu baseado no role do usuário
     if (profile?.role === 'admin_platform') {
-      return platformAdminItems;
+      return platformAdminItems
     }
-    return hospitalItems;
-  };
+    return hospitalItems
+  }
 
   const getContextTitle = () => {
     if (currentHospital) {
-      return currentHospital.name;
+      return currentHospital.name
     }
     if (hospitalContext) {
-      return hospitalContext.hospitalName;
+      return hospitalContext.hospitalName
     }
-    return profile?.role === 'admin_platform' ? 'Admin Plataforma' : 'Hospital';
-  };
+    return profile?.role === 'admin_platform' ? 'Admin Plataforma' : 'Hospital'
+  }
 
   const getGroupLabel = () => {
     if (currentHospital || hospitalContext) {
-      return !collapsed ? 'Menu do Hospital' : '';
+      return !collapsed ? 'Menu do Hospital' : ''
     }
-    return !collapsed ? (profile?.role === 'admin_platform' ? 'Administração' : 'Menu Principal') : '';
-  };
+    return !collapsed
+      ? profile?.role === 'admin_platform'
+        ? 'Administração'
+        : 'Menu Principal'
+      : ''
+  }
 
-  const menuItems = getMenuItems();
-  const currentPath = location.pathname;
+  const menuItems = getMenuItems()
+  const currentPath = location.pathname
 
   const isActive = (path: string) => {
     if (path === '/') {
       // Para dashboard, verifica se estamos na raiz do hospital ou plataforma
       if (currentHospital) {
-        return currentPath === `/hospital/${currentHospital.slug}/` || currentPath === `/hospital/${currentHospital.slug}`;
+        return (
+          currentPath === `/hospital/${currentHospital.slug}/` ||
+          currentPath === `/hospital/${currentHospital.slug}`
+        )
       }
-      return currentPath === '/';
+      return currentPath === '/'
     }
-    
+
     // Para outras rotas, verifica se o path atual contém a rota
     if (currentHospital) {
-      const fullPath = `/hospital/${currentHospital.slug}${path}`;
-      return currentPath.startsWith(fullPath);
+      const fullPath = `/hospital/${currentHospital.slug}${path}`
+      return currentPath.startsWith(fullPath)
     }
-    return currentPath.startsWith(path);
-  };
+    return currentPath.startsWith(path)
+  }
 
   const getNavClasses = (path: string) => {
-    const active = isActive(path);
-    return active 
-      ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
-      : "hover:bg-muted/50 text-foreground";
-  };
+    const active = isActive(path)
+    return active
+      ? 'bg-primary/10 text-primary font-medium border-r-2 border-primary'
+      : 'hover:bg-muted/50 text-foreground'
+  }
 
   const getLinkPath = (path: string) => {
     // Se estamos em contexto de hospital específico, constrói o path completo
     if (currentHospital) {
-      return buildPath(path);
+      return buildPath(path)
     }
     // Senão, usa o path direto
-    return path;
-  };
+    return path
+  }
 
   const getUserInitials = () => {
-    if (!profile) return 'U';
-    return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase();
-  };
+    if (!profile) return 'U'
+    return `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`.toUpperCase()
+  }
 
   const handleSignOut = async () => {
-    await signOut();
-  };
+    await signOut()
+  }
 
   return (
-    <Sidebar className={collapsed ? "w-16" : "w-64"}>
+    <Sidebar className={collapsed ? 'w-16' : 'w-64'}>
       <SidebarHeader className="border-b">
         <div className="flex items-center gap-3 px-3 py-4">
           <div className="p-2 rounded-lg bg-primary/10">
@@ -165,9 +172,7 @@ export function AppSidebar({ hospitalContext }: AppSidebarProps) {
           {!collapsed && (
             <div className="flex-1">
               <h1 className="font-bold text-lg">NPS Analytics</h1>
-              <p className="text-xs text-muted-foreground">
-                {getContextTitle()}
-              </p>
+              <p className="text-xs text-muted-foreground">{getContextTitle()}</p>
             </div>
           )}
           {!collapsed && hospitalContext && (
@@ -185,9 +190,7 @@ export function AppSidebar({ hospitalContext }: AppSidebarProps) {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
-            {getGroupLabel()}
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>{getGroupLabel()}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -221,21 +224,25 @@ export function AppSidebar({ hospitalContext }: AppSidebarProps) {
                     <p className="text-sm font-medium truncate">
                       {profile?.first_name} {profile?.last_name}
                     </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {profile?.email}
-                    </p>
+                    <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
                   </div>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
                 <DropdownMenuItem asChild>
-                  <NavLink to={currentHospital ? buildPath('/profile') : '/profile'} className="cursor-pointer">
+                  <NavLink
+                    to={currentHospital ? buildPath('/profile') : '/profile'}
+                    className="cursor-pointer"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     Meu Perfil
                   </NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="text-destructive cursor-pointer"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sair
                 </DropdownMenuItem>
@@ -258,19 +265,23 @@ export function AppSidebar({ hospitalContext }: AppSidebarProps) {
                   <p className="text-sm font-medium">
                     {profile?.first_name} {profile?.last_name}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {profile?.email}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{profile?.email}</p>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <NavLink to={currentHospital ? buildPath('/profile') : '/profile'} className="cursor-pointer">
+                  <NavLink
+                    to={currentHospital ? buildPath('/profile') : '/profile'}
+                    className="cursor-pointer"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     Meu Perfil
                   </NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="text-destructive cursor-pointer"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sair
                 </DropdownMenuItem>
@@ -280,5 +291,5 @@ export function AppSidebar({ hospitalContext }: AppSidebarProps) {
         </div>
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }

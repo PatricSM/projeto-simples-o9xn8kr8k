@@ -4,7 +4,13 @@
  */
 import type { PostgrestError, AuthError } from '@supabase/supabase-js'
 
-type SupabaseError = PostgrestError | AuthError | Error | { message?: string; code?: string } | null | undefined
+type SupabaseError =
+  | PostgrestError
+  | AuthError
+  | Error
+  | { message?: string; code?: string }
+  | null
+  | undefined
 
 /**
  * Retorna a mensagem amigável de qualquer tipo de erro do Supabase.
@@ -32,7 +38,11 @@ export function extractFieldErrors(err: SupabaseError): Record<string, string> {
   // Padrão "duplicate key value violates unique constraint \"<name>\""
   const dupMatch = msg.match(/duplicate key value violates unique constraint ["']?(\w+)["']?/i)
   if (dupMatch) {
-    const fieldGuess = dupMatch[1].replace(/_key$|_idx$/, '').split('_').pop() || dupMatch[1]
+    const fieldGuess =
+      dupMatch[1]
+        .replace(/_key$|_idx$/, '')
+        .split('_')
+        .pop() || dupMatch[1]
     out[fieldGuess] = 'Já existe um registro com este valor'
     return out
   }

@@ -38,13 +38,13 @@ All colors MUST be HSL.
     --ring: 45 93% 58%;
 
     /* Escala NPS 0-10 com cores graduais */
-    --nps-0: 1 82% 57%;    /* Vermelho intenso - Detratores */
+    --nps-0: 1 82% 57%; /* Vermelho intenso - Detratores */
     --nps-1: 8 76% 55%;
     --nps-2: 15 73% 53%;
     --nps-3: 22 70% 51%;
     --nps-4: 29 67% 49%;
     --nps-5: 36 64% 47%;
-    --nps-6: 43 61% 45%;   /* Amarelo neutro - Neutros */
+    --nps-6: 43 61% 45%; /* Amarelo neutro - Neutros */
     --nps-7: 60 75% 45%;
     --nps-8: 80 85% 40%;
     --nps-9: 95 95% 35%;

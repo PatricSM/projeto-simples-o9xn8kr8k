@@ -1,52 +1,52 @@
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { useHospitalRoute } from '@/hooks/use-hospital-route';
-import { useAuth } from '@/hooks/use-auth';
-import { HospitalViewProvider } from '@/contexts/HospitalViewContext';
-import Layout from '@/components/Layout';
-import Dashboard from '@/pages/Dashboard';
-import Campaigns from '@/pages/campaigns/Campaigns';
-import NewCampaign from '@/pages/campaigns/NewCampaign';
-import CampaignResponses from '@/pages/campaigns/CampaignResponses';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import { useEffect } from 'react';
-import { useHospitalView } from '@/contexts/HospitalViewContext';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { useHospitalRoute } from '@/hooks/use-hospital-route'
+import { useAuth } from '@/hooks/use-auth'
+import { HospitalViewProvider } from '@/contexts/HospitalViewContext'
+import Layout from '@/components/Layout'
+import Dashboard from '@/pages/Dashboard'
+import Campaigns from '@/pages/campaigns/Campaigns'
+import NewCampaign from '@/pages/campaigns/NewCampaign'
+import CampaignResponses from '@/pages/campaigns/CampaignResponses'
+import ProtectedRoute from '@/components/ProtectedRoute'
+import { useEffect } from 'react'
+import { useHospitalView } from '@/contexts/HospitalViewContext'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
 
 function HospitalContent() {
-  const { currentHospital, loading } = useHospitalRoute();
-  const { setHospitalContext } = useHospitalView();
-  const { profile } = useAuth();
-  const navigate = useNavigate();
+  const { currentHospital, loading } = useHospitalRoute()
+  const { setHospitalContext } = useHospitalView()
+  const { profile } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (currentHospital) {
       setHospitalContext({
         hospitalId: currentHospital.id,
         hospitalName: currentHospital.name,
-      });
+      })
     } else {
-      setHospitalContext(null);
+      setHospitalContext(null)
     }
 
     return () => {
       // Limpar contexto ao sair
       if (!currentHospital) {
-        setHospitalContext(null);
+        setHospitalContext(null)
       }
-    };
-  }, [currentHospital, setHospitalContext]);
+    }
+  }, [currentHospital, setHospitalContext])
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    );
+    )
   }
 
   if (!currentHospital) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" replace />
   }
 
   // Header para mostrar que estamos em contexto de hospital específico
@@ -70,30 +70,30 @@ function HospitalContent() {
                 <span className="text-sm text-blue-600 font-medium">
                   Visualizando: {currentHospital.name}
                 </span>
-                <p className="text-xs text-blue-500">
-                  Interface específica do hospital
-                </p>
+                <p className="text-xs text-blue-500">Interface específica do hospital</p>
               </div>
             </div>
           </div>
         </div>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   return (
     <div className="min-h-screen">
       <HospitalHeader />
       <Routes>
-        <Route path="/" element={<Dashboard hospitalId={currentHospital.id} hospitalName={currentHospital.name} />} />
+        <Route
+          path="/"
+          element={
+            <Dashboard hospitalId={currentHospital.id} hospitalName={currentHospital.name} />
+          }
+        />
         <Route path="/campaigns" element={<Campaigns />} />
         <Route path="/campaigns/new" element={<NewCampaign />} />
         <Route path="/campaigns/:campaignId/edit" element={<NewCampaign />} />
-        <Route
-          path="/campaigns/:campaignId/responses"
-          element={<CampaignResponses />}
-        />
+        <Route path="/campaigns/:campaignId/responses" element={<CampaignResponses />} />
         <Route
           path="/campaigns/:campaignId/analytics"
           element={
@@ -154,7 +154,7 @@ function HospitalContent() {
         <Route path="*" element={<Navigate to={`/hospital/${currentHospital.slug}/`} replace />} />
       </Routes>
     </div>
-  );
+  )
 }
 
 export default function HospitalRoutes() {
@@ -164,5 +164,5 @@ export default function HospitalRoutes() {
         <HospitalContent />
       </Layout>
     </HospitalViewProvider>
-  );
+  )
 }

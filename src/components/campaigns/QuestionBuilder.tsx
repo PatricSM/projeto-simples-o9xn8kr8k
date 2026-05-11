@@ -1,65 +1,69 @@
-import { useState, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, GripVertical, Plus, X, GitBranch } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { Checkbox } from '@/components/ui/checkbox';
-import ConditionalLogic from "@/components/campaigns/ConditionalLogic";
-import ContextualTags from "@/components/campaigns/ContextualTags";
-import { NPS_COLOR_PROFILE_OPTIONS } from '@/lib/nps-color-profiles';
+import { useState, useEffect } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Trash2, GripVertical, Plus, X, GitBranch } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { Checkbox } from '@/components/ui/checkbox'
+import ConditionalLogic from '@/components/campaigns/ConditionalLogic'
+import ContextualTags from '@/components/campaigns/ContextualTags'
+import { NPS_COLOR_PROFILE_OPTIONS } from '@/lib/nps-color-profiles'
 
 export interface Question {
-  id: string;
-  title: string;
-  description?: string;
-  question_type: 'nps_scale' | 'text' | 'multiple_choice' | 'rating' | 'contact_points' | 'problems';
-  required: boolean;
-  order_index: number;
-  section_id?: string;
-  config: Record<string, any>;
-  is_primary_nps?: boolean; // Indica se é a pergunta NPS principal
+  id: string
+  title: string
+  description?: string
+  question_type: 'nps_scale' | 'text' | 'multiple_choice' | 'rating' | 'contact_points' | 'problems'
+  required: boolean
+  order_index: number
+  section_id?: string
+  config: Record<string, any>
+  is_primary_nps?: boolean // Indica se é a pergunta NPS principal
   conditional_logic?: {
-    enabled: boolean;
-    rules: ConditionalRule[];
-  };
+    enabled: boolean
+    rules: ConditionalRule[]
+  }
 }
 
 export interface ConditionalRule {
-  option_value: string;
-  target_section_id: string;
-  action: 'go_to_section' | 'skip_to_end';
+  option_value: string
+  target_section_id: string
+  action: 'go_to_section' | 'skip_to_end'
 }
 
 interface QuestionBuilderProps {
-  question: Question;
-  index: number;
-  sections: Array<{ id: string; title: string; order_index: number }>;
-  questions: Question[]; // Para tags contextuais
-  onUpdate: (id: string, updates: Partial<Question>) => void;
-  onRemove: (id: string) => void;
-  onMarkAsPrimaryNPS?: (questionId: string) => void; // Nova função para marcar como NPS principal
+  question: Question
+  index: number
+  sections: Array<{ id: string; title: string; order_index: number }>
+  questions: Question[] // Para tags contextuais
+  onUpdate: (id: string, updates: Partial<Question>) => void
+  onRemove: (id: string) => void
+  onMarkAsPrimaryNPS?: (questionId: string) => void // Nova função para marcar como NPS principal
 }
 
-export default function QuestionBuilder({ 
-  question, 
-  index, 
-  sections, 
+export default function QuestionBuilder({
+  question,
+  index,
+  sections,
   questions,
-  onUpdate, 
+  onUpdate,
   onRemove,
-  onMarkAsPrimaryNPS 
+  onMarkAsPrimaryNPS,
 }: QuestionBuilderProps) {
-  const [options, setOptions] = useState<string[]>(
-    question.config?.options || ['']
-  );
+  const [options, setOptions] = useState<string[]>(question.config?.options || [''])
   const [showConditionalLogic, setShowConditionalLogic] = useState(
-    question.conditional_logic?.enabled || false
-  );
+    question.conditional_logic?.enabled || false,
+  )
 
   /**
    * Re-sincroniza o state local `options` quando a prop `question.config.options`
@@ -71,18 +75,18 @@ export default function QuestionBuilder({
    * valor antigo, fazendo as opções digitadas serem perdidas (Bug #3).
    */
   useEffect(() => {
-    const incoming = question.config?.options;
+    const incoming = question.config?.options
     if (Array.isArray(incoming)) {
-      const normalized = incoming.length > 0 ? incoming : [''];
+      const normalized = incoming.length > 0 ? incoming : ['']
       // Comparação rasa por JSON evita loop quando o conteúdo é equivalente
       if (JSON.stringify(normalized) !== JSON.stringify(options)) {
-        setOptions(normalized);
+        setOptions(normalized)
       }
     } else if (question.question_type === 'multiple_choice' && options.length === 0) {
-      setOptions(['']);
+      setOptions([''])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [question.config?.options, question.question_type]);
+  }, [question.config?.options, question.question_type])
 
   const getQuestionTypeLabel = (type: string) => {
     const types = {
@@ -92,27 +96,27 @@ export default function QuestionBuilder({
       rating: 'Avaliação (1-5 estrelas)',
       contact_points: 'Pontos de Contato',
       problems: 'Problemas Reportados',
-    };
-    return types[type as keyof typeof types] || type;
-  };
+    }
+    return types[type as keyof typeof types] || type
+  }
 
   const updateConfig = (key: string, value: any) => {
     onUpdate(question.id, {
-      config: { ...question.config, [key]: value }
-    });
-  };
+      config: { ...question.config, [key]: value },
+    })
+  }
 
   const updateConditionalLogic = (enabled: boolean, rules: ConditionalRule[] = []) => {
     onUpdate(question.id, {
-      conditional_logic: { enabled, rules }
-    });
-  };
+      conditional_logic: { enabled, rules },
+    })
+  }
 
   const insertTagInField = (tag: string, field: 'title' | 'description') => {
-    const currentValue = field === 'title' ? question.title : question.description || '';
-    const newValue = currentValue + ' ' + tag;
-    onUpdate(question.id, { [field]: newValue });
-  };
+    const currentValue = field === 'title' ? question.title : question.description || ''
+    const newValue = currentValue + ' ' + tag
+    onUpdate(question.id, { [field]: newValue })
+  }
 
   /**
    * Atualiza as opções preservando strings vazias intermediárias.
@@ -123,24 +127,24 @@ export default function QuestionBuilder({
    * Isso permite ao usuário digitar/apagar livremente sem perder opções.
    */
   const handleOptionsChange = (newOptions: string[]) => {
-    setOptions(newOptions);
-    updateConfig('options', newOptions);
-  };
+    setOptions(newOptions)
+    updateConfig('options', newOptions)
+  }
 
   const addOption = () => {
-    handleOptionsChange([...options, '']);
-  };
+    handleOptionsChange([...options, ''])
+  }
 
   const updateOption = (index: number, value: string) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    handleOptionsChange(newOptions);
-  };
+    const newOptions = [...options]
+    newOptions[index] = value
+    handleOptionsChange(newOptions)
+  }
 
   const removeOption = (index: number) => {
-    const newOptions = options.filter((_, i) => i !== index);
-    handleOptionsChange(newOptions);
-  };
+    const newOptions = options.filter((_, i) => i !== index)
+    handleOptionsChange(newOptions)
+  }
 
   const renderQuestionTypeConfig = () => {
     switch (question.question_type) {
@@ -149,7 +153,7 @@ export default function QuestionBuilder({
           <div className="space-y-4">
             <div>
               <Label>Configuração NPS</Label>
-              
+
               {/* Marcação como NPS Principal */}
               <div className="flex items-center gap-2 mt-2 p-3 bg-blue-50 rounded-lg border-l-4 border-l-blue-500">
                 <input
@@ -158,9 +162,9 @@ export default function QuestionBuilder({
                   checked={question.is_primary_nps || false}
                   onChange={(e) => {
                     if (e.target.checked && onMarkAsPrimaryNPS) {
-                      onMarkAsPrimaryNPS(question.id);
+                      onMarkAsPrimaryNPS(question.id)
                     } else {
-                      onUpdate(question.id, { is_primary_nps: false });
+                      onUpdate(question.id, { is_primary_nps: false })
                     }
                   }}
                 />
@@ -168,19 +172,19 @@ export default function QuestionBuilder({
                   ⭐ Marcar como Escala NPS Principal
                 </Label>
               </div>
-              
+
               {question.is_primary_nps && (
                 <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded border">
                   📊 Esta é a pergunta NPS principal usada para cálculo do score oficial da campanha
                 </div>
               )}
-              
-              {!question.is_primary_nps && questions.some(q => q.is_primary_nps) && (
+
+              {!question.is_primary_nps && questions.some((q) => q.is_primary_nps) && (
                 <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded border">
                   ℹ️ Esta é uma escala NPS secundária para análises específicas
                 </div>
               )}
-              
+
               <div className="grid grid-cols-1 gap-4 mt-4">
                 <div>
                   <Label className="text-sm">Pergunta para Detratores (0-6)</Label>
@@ -235,7 +239,7 @@ export default function QuestionBuilder({
               </div>
             </div>
           </div>
-        );
+        )
 
       case 'multiple_choice':
         return (
@@ -254,7 +258,7 @@ export default function QuestionBuilder({
                 </Label>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border-l-4 border-l-green-500">
               <input
                 type="checkbox"
@@ -266,7 +270,7 @@ export default function QuestionBuilder({
                 ✨ Incluir opção "Outro(a)" para resposta personalizada
               </Label>
             </div>
-            
+
             <div className="space-y-2">
               {options.map((option, idx) => (
                 <div key={idx} className="flex items-center gap-2">
@@ -287,7 +291,7 @@ export default function QuestionBuilder({
                   )}
                 </div>
               ))}
-              
+
               {/* Mostrar opção "Outro(a)" se habilitada */}
               {question.config?.allow_other !== false && (
                 <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border-2 border-dashed border-gray-300">
@@ -301,20 +305,20 @@ export default function QuestionBuilder({
                   </Badge>
                 </div>
               )}
-              
+
               <Button type="button" variant="outline" size="sm" onClick={addOption}>
                 <Plus className="h-4 w-4 mr-2" />
                 Adicionar Opção
               </Button>
             </div>
           </div>
-        );
+        )
 
       case 'rating': {
-        const isLikert = question.config?.display_mode === 'likert';
-        const likertItems: string[] = question.config?.items || [];
-        const maxRating = question.config?.max_rating || 5;
-        const scaleLabels: string[] = question.config?.scale_labels || Array(maxRating).fill('');
+        const isLikert = question.config?.display_mode === 'likert'
+        const likertItems: string[] = question.config?.items || []
+        const maxRating = question.config?.max_rating || 5
+        const scaleLabels: string[] = question.config?.scale_labels || Array(maxRating).fill('')
 
         /**
          * Ativa/desativa o modo Likert (matriz).
@@ -333,36 +337,40 @@ export default function QuestionBuilder({
                   ? scaleLabels
                   : ['Péssimo', 'Ruim', 'Regular', 'Bom', 'Excelente'].slice(0, maxRating),
               },
-            });
+            })
           } else {
             // Remover campos exclusivos do Likert, manter o restante
-            const { display_mode, likert_style, items, scale_labels, ...rest } = question.config || {};
-            onUpdate(question.id, { config: { ...rest } });
+            const { display_mode, likert_style, items, scale_labels, ...rest } =
+              question.config || {}
+            onUpdate(question.id, { config: { ...rest } })
           }
-        };
+        }
 
         /** Atualiza um item individual na lista de itens Likert */
         const updateLikertItem = (idx: number, value: string) => {
-          const updated = [...likertItems];
-          updated[idx] = value;
-          updateConfig('items', updated);
-        };
+          const updated = [...likertItems]
+          updated[idx] = value
+          updateConfig('items', updated)
+        }
 
         /** Adiciona novo item à lista Likert */
-        const addLikertItem = () => updateConfig('items', [...likertItems, '']);
+        const addLikertItem = () => updateConfig('items', [...likertItems, ''])
 
         /** Remove item da lista Likert (mínimo 2 itens) */
         const removeLikertItem = (idx: number) => {
-          if (likertItems.length <= 2) return;
-          updateConfig('items', likertItems.filter((_, i) => i !== idx));
-        };
+          if (likertItems.length <= 2) return
+          updateConfig(
+            'items',
+            likertItems.filter((_, i) => i !== idx),
+          )
+        }
 
         /** Atualiza um label individual na escala */
         const updateScaleLabel = (idx: number, value: string) => {
-          const updated = [...scaleLabels];
-          updated[idx] = value;
-          updateConfig('scale_labels', updated);
-        };
+          const updated = [...scaleLabels]
+          updated[idx] = value
+          updateConfig('scale_labels', updated)
+        }
 
         return (
           <div className="space-y-4">
@@ -375,15 +383,17 @@ export default function QuestionBuilder({
                   <Select
                     value={maxRating.toString()}
                     onValueChange={(value) => {
-                      const newMax = parseInt(value);
-                      const newLabels = Array(newMax).fill('').map((_, i) => scaleLabels[i] || '');
+                      const newMax = parseInt(value)
+                      const newLabels = Array(newMax)
+                        .fill('')
+                        .map((_, i) => scaleLabels[i] || '')
                       onUpdate(question.id, {
                         config: {
                           ...question.config,
                           max_rating: newMax,
                           ...(isLikert ? { scale_labels: newLabels } : {}),
                         },
-                      });
+                      })
                     }}
                   >
                     <SelectTrigger>
@@ -490,7 +500,9 @@ export default function QuestionBuilder({
 
                 {/* Labels da escala */}
                 <div>
-                  <Label className="text-sm font-medium">Rótulos da escala ({maxRating} pontos)</Label>
+                  <Label className="text-sm font-medium">
+                    Rótulos da escala ({maxRating} pontos)
+                  </Label>
                   <p className="text-xs text-muted-foreground mb-2">
                     Defina o rótulo de cada ponto da escala (ex: 1 = Péssimo, 5 = Excelente).
                   </p>
@@ -510,7 +522,7 @@ export default function QuestionBuilder({
               </div>
             )}
           </div>
-        );
+        )
       }
 
       case 'text':
@@ -546,12 +558,12 @@ export default function QuestionBuilder({
               </div>
             </div>
           </div>
-        );
+        )
 
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <Card className="border-l-4 border-l-primary">
@@ -560,9 +572,7 @@ export default function QuestionBuilder({
           <div className="flex items-center gap-2">
             <GripVertical className="h-4 w-4 text-muted-foreground" />
             <Badge variant="outline">Pergunta {index + 1}</Badge>
-            <Badge variant="secondary">
-              {getQuestionTypeLabel(question.question_type)}
-            </Badge>
+            <Badge variant="secondary">{getQuestionTypeLabel(question.question_type)}</Badge>
             {question.is_primary_nps && (
               <Badge variant="default" className="bg-blue-600 text-white">
                 ⭐ NPS Principal
@@ -570,7 +580,7 @@ export default function QuestionBuilder({
             )}
             {question.section_id && (
               <Badge variant="outline" className="bg-blue-50">
-                {sections.find(s => s.id === question.section_id)?.title || 'Seção'}
+                {sections.find((s) => s.id === question.section_id)?.title || 'Seção'}
               </Badge>
             )}
             {sections.length > 0 && !question.section_id && (
@@ -579,12 +589,7 @@ export default function QuestionBuilder({
               </Badge>
             )}
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => onRemove(question.id)}
-          >
+          <Button type="button" variant="ghost" size="icon" onClick={() => onRemove(question.id)}>
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -611,8 +616,8 @@ export default function QuestionBuilder({
             <Select
               value={question.question_type}
               onValueChange={(value) => {
-                let defaultConfig = {};
-                
+                let defaultConfig = {}
+
                 // Definir configurações padrão por tipo de pergunta
                 switch (value) {
                   case 'multiple_choice':
@@ -622,27 +627,27 @@ export default function QuestionBuilder({
                       options: question.config?.options?.length ? question.config.options : [''],
                       allow_multiple: question.config?.allow_multiple ?? true,
                       allow_other: question.config?.allow_other ?? true,
-                    };
-                    break;
+                    }
+                    break
                   case 'nps_scale':
-                    defaultConfig = { 
-                      is_primary_nps: false 
-                    };
-                    break;
+                    defaultConfig = {
+                      is_primary_nps: false,
+                    }
+                    break
                   case 'rating':
-                    defaultConfig = { 
-                      max_rating: 5 
-                    };
-                    break;
+                    defaultConfig = {
+                      max_rating: 5,
+                    }
+                    break
                   default:
-                    defaultConfig = {};
+                    defaultConfig = {}
                 }
-                
-                onUpdate(question.id, { 
+
+                onUpdate(question.id, {
                   question_type: value as any,
                   config: defaultConfig,
-                  conditional_logic: { enabled: false, rules: [] }
-                });
+                  conditional_logic: { enabled: false, rules: [] },
+                })
               }}
             >
               <SelectTrigger>
@@ -680,13 +685,21 @@ export default function QuestionBuilder({
             <Label>Seção {sections.length > 0 && <span className="text-red-500">*</span>}</Label>
             <Select
               value={question.section_id || 'no-section'}
-              onValueChange={(value) => onUpdate(question.id, { section_id: value === 'no-section' ? undefined : value })}
+              onValueChange={(value) =>
+                onUpdate(question.id, { section_id: value === 'no-section' ? undefined : value })
+              }
             >
-              <SelectTrigger className={sections.length > 0 && !question.section_id ? 'border-red-300' : ''}>
-                <SelectValue placeholder={sections.length > 0 ? "Selecione uma seção" : "Sem seção específica"} />
+              <SelectTrigger
+                className={sections.length > 0 && !question.section_id ? 'border-red-300' : ''}
+              >
+                <SelectValue
+                  placeholder={sections.length > 0 ? 'Selecione uma seção' : 'Sem seção específica'}
+                />
               </SelectTrigger>
               <SelectContent>
-                {sections.length === 0 && <SelectItem value="no-section">Sem seção específica</SelectItem>}
+                {sections.length === 0 && (
+                  <SelectItem value="no-section">Sem seção específica</SelectItem>
+                )}
                 {sections
                   .sort((a, b) => a.order_index - b.order_index)
                   .map((section, index) => (
@@ -711,9 +724,7 @@ export default function QuestionBuilder({
               checked={question.required}
               onCheckedChange={(checked) => onUpdate(question.id, { required: !!checked })}
             />
-            <Label htmlFor={`required-${question.id}`}>
-              Pergunta obrigatória
-            </Label>
+            <Label htmlFor={`required-${question.id}`}>Pergunta obrigatória</Label>
           </div>
 
           {question.question_type === 'multiple_choice' && sections.length > 0 && (
@@ -722,8 +733,8 @@ export default function QuestionBuilder({
                 id={`conditional-${question.id}`}
                 checked={showConditionalLogic}
                 onCheckedChange={(checked) => {
-                  setShowConditionalLogic(!!checked);
-                  updateConditionalLogic(!!checked, question.conditional_logic?.rules || []);
+                  setShowConditionalLogic(!!checked)
+                  updateConditionalLogic(!!checked, question.conditional_logic?.rules || [])
                 }}
               />
               <Label htmlFor={`conditional-${question.id}`} className="flex items-center gap-1">
@@ -746,7 +757,7 @@ export default function QuestionBuilder({
           <>
             <Separator />
             <ConditionalLogic
-              options={options.filter(opt => opt.trim())}
+              options={options.filter((opt) => opt.trim())}
               sections={sections}
               rules={question.conditional_logic?.rules || []}
               onUpdate={(rules) => updateConditionalLogic(true, rules)}
@@ -755,5 +766,5 @@ export default function QuestionBuilder({
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

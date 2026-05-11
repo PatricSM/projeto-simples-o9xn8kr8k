@@ -1,70 +1,71 @@
-import { useAuth } from '@/hooks/use-auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { BarChart3, TrendingUp, Users, MessageSquare, Building2, Plus } from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useHospitalRoute } from '@/hooks/use-hospital-route';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { useAuth } from '@/hooks/use-auth'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { BarChart3, TrendingUp, Users, MessageSquare, Building2, Plus } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useHospitalRoute } from '@/hooks/use-hospital-route'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase/client'
 
 interface DashboardProps {
-  hospitalId?: string | null;
-  hospitalName?: string | null;
+  hospitalId?: string | null
+  hospitalName?: string | null
 }
 
 export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) {
-  const { profile, isPlatformAdmin } = useAuth();
-  const { buildPath } = useHospitalRoute();
-  const navigate = useNavigate();
-  const [hospitalStats, setHospitalStats] = useState<any[]>([]);
-  const [recentCampaigns, setRecentCampaigns] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { profile, isPlatformAdmin } = useAuth()
+  const { buildPath } = useHospitalRoute()
+  const navigate = useNavigate()
+  const [hospitalStats, setHospitalStats] = useState<any[]>([])
+  const [recentCampaigns, setRecentCampaigns] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
 
   // Se estamos visualizando um hospital específico, não é admin da plataforma no contexto desta visualização
-  const isViewingAsHospital = hospitalId !== null && hospitalId !== undefined;
-  const effectiveIsPlatformAdmin = isPlatformAdmin && !isViewingAsHospital;
+  const isViewingAsHospital = hospitalId !== null && hospitalId !== undefined
+  const effectiveIsPlatformAdmin = isPlatformAdmin && !isViewingAsHospital
 
   const fetchHospitalData = async () => {
-    if (!hospitalId) return;
-    
-    setLoading(true);
+    if (!hospitalId) return
+
+    setLoading(true)
     try {
       // Buscar campanhas do hospital
       const { data: campaigns, error: campaignsError } = await supabase
         .from('campaigns')
         .select('*')
-        .eq('hospital_id', hospitalId);
-      
+        .eq('hospital_id', hospitalId)
+
       if (campaignsError) {
-        console.error('Erro ao buscar campanhas:', campaignsError);
-        return;
+        console.error('Erro ao buscar campanhas:', campaignsError)
+        return
       }
 
       // Buscar respostas NPS das campanhas do hospital
-      const campaignIds = campaigns?.map(c => c.id) || [];
-      let totalResponses = 0;
-      let totalNPS = 0;
-      
+      const campaignIds = campaigns?.map((c) => c.id) || []
+      let totalResponses = 0
+      let totalNPS = 0
+
       if (campaignIds.length > 0) {
         const { data: responses, error: responsesError } = await supabase
           .from('nps_responses')
           .select('nps_score')
           .in('campaign_id', campaignIds)
-          .not('nps_score', 'is', null);
-        
+          .not('nps_score', 'is', null)
+
         if (!responsesError && responses) {
-          totalResponses = responses.length;
+          totalResponses = responses.length
           if (totalResponses > 0) {
-            const avgNPS = responses.reduce((sum, r) => sum + (r.nps_score || 0), 0) / totalResponses;
-            totalNPS = Math.round(avgNPS);
+            const avgNPS =
+              responses.reduce((sum, r) => sum + (r.nps_score || 0), 0) / totalResponses
+            totalNPS = Math.round(avgNPS)
           }
         }
       }
 
       // Atualizar estatísticas do hospital
-      const activeCampaigns = campaigns?.filter(c => c.status === 'active').length || 0;
-      
+      const activeCampaigns = campaigns?.filter((c) => c.status === 'active').length || 0
+
       setHospitalStats([
         {
           title: 'Total de Campanhas',
@@ -94,32 +95,39 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
           icon: Users,
           trend: 'up',
         },
-      ]);
+      ])
 
       // Atualizar campanhas recentes
-      const recent = campaigns?.slice(0, 3).map(campaign => ({
-        id: campaign.id,
-        name: campaign.name,
-        type: campaign.type === 'email_batch' ? 'Email' : campaign.type === 'whatsapp_batch' ? 'WhatsApp' : campaign.type === 'sms_batch' ? 'SMS' : 'Link Público',
-        status: campaign.status,
-        responses: 0, // Será atualizado com dados reais
-        nps: 0, // Será atualizado com dados reais
-      })) || [];
-      
-      setRecentCampaigns(recent);
-      
+      const recent =
+        campaigns?.slice(0, 3).map((campaign) => ({
+          id: campaign.id,
+          name: campaign.name,
+          type:
+            campaign.type === 'email_batch'
+              ? 'Email'
+              : campaign.type === 'whatsapp_batch'
+                ? 'WhatsApp'
+                : campaign.type === 'sms_batch'
+                  ? 'SMS'
+                  : 'Link Público',
+          status: campaign.status,
+          responses: 0, // Será atualizado com dados reais
+          nps: 0, // Será atualizado com dados reais
+        })) || []
+
+      setRecentCampaigns(recent)
     } catch (error) {
-      console.error('Erro ao buscar dados do hospital:', error);
+      console.error('Erro ao buscar dados do hospital:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     if (isViewingAsHospital && hospitalId) {
-      fetchHospitalData();
+      fetchHospitalData()
     }
-  }, [hospitalId, isViewingAsHospital]);
+  }, [hospitalId, isViewingAsHospital])
 
   // Stats mockados para demonstração quando não está visualizando um hospital específico
   const defaultHospitalStats = [
@@ -151,7 +159,7 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
       icon: Users,
       trend: 'up',
     },
-  ];
+  ]
 
   const platformStats = [
     {
@@ -182,7 +190,7 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
       icon: TrendingUp,
       trend: 'up',
     },
-  ];
+  ]
 
   const defaultRecentCampaigns = [
     {
@@ -209,34 +217,46 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
       responses: 67,
       nps: 62,
     },
-  ];
+  ]
 
-  const stats = effectiveIsPlatformAdmin ? platformStats : (isViewingAsHospital ? hospitalStats : defaultHospitalStats);
-  const campaigns = isViewingAsHospital ? recentCampaigns : defaultRecentCampaigns;
+  const stats = effectiveIsPlatformAdmin
+    ? platformStats
+    : isViewingAsHospital
+      ? hospitalStats
+      : defaultHospitalStats
+  const campaigns = isViewingAsHospital ? recentCampaigns : defaultRecentCampaigns
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'paused': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      case 'paused':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'completed':
+        return 'bg-blue-100 text-blue-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
-  };
+  }
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return 'Ativa';
-      case 'paused': return 'Pausada';
-      case 'completed': return 'Concluída';
-      default: return 'Rascunho';
+      case 'active':
+        return 'Ativa'
+      case 'paused':
+        return 'Pausada'
+      case 'completed':
+        return 'Concluída'
+      default:
+        return 'Rascunho'
     }
-  };
+  }
 
   const getNPSColor = (score: number) => {
-    if (score >= 70) return 'text-green-600';
-    if (score >= 50) return 'text-yellow-600';
-    return 'text-red-600';
-  };
+    if (score >= 70) return 'text-green-600'
+    if (score >= 50) return 'text-yellow-600'
+    return 'text-red-600'
+  }
 
   return (
     <div className="space-y-8 p-6">
@@ -244,23 +264,21 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">
-            {effectiveIsPlatformAdmin 
-              ? 'Dashboard Administrativo' 
-              : isViewingAsHospital 
-                ? `Dashboard - ${hospitalName}` 
-                : 'Dashboard do Hospital'
-            }
+            {effectiveIsPlatformAdmin
+              ? 'Dashboard Administrativo'
+              : isViewingAsHospital
+                ? `Dashboard - ${hospitalName}`
+                : 'Dashboard do Hospital'}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {effectiveIsPlatformAdmin 
+            {effectiveIsPlatformAdmin
               ? 'Visão geral de todos os hospitais e campanhas'
               : isViewingAsHospital
                 ? `Dados e campanhas do ${hospitalName}`
-                : `Bem-vindo de volta, ${profile?.first_name}! Aqui está o resumo das suas campanhas NPS.`
-            }
+                : `Bem-vindo de volta, ${profile?.first_name}! Aqui está o resumo das suas campanhas NPS.`}
           </p>
         </div>
-        
+
         {!effectiveIsPlatformAdmin && (
           <Button onClick={() => navigate(buildPath('/campaigns/new'))}>
             <Plus className="mr-2 h-4 w-4" />
@@ -270,21 +288,19 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
       </div>
 
       {/* Stats Cards */}
-      {loading && <div className="text-sm text-muted-foreground animate-pulse mb-4">Atualizando dados...</div>}
+      {loading && (
+        <div className="text-sm text-muted-foreground animate-pulse mb-4">Atualizando dados...</div>
+      )}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.title} className="hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.description}
-              </p>
+              <p className="text-xs text-muted-foreground">{stat.description}</p>
             </CardContent>
           </Card>
         ))}
@@ -296,18 +312,20 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
           <CardHeader>
             <CardTitle>Campanhas Recentes</CardTitle>
             <CardDescription>
-              {effectiveIsPlatformAdmin 
-                ? 'Últimas campanhas criadas na plataforma' 
-                : isViewingAsHospital 
+              {effectiveIsPlatformAdmin
+                ? 'Últimas campanhas criadas na plataforma'
+                : isViewingAsHospital
                   ? `Campanhas do ${hospitalName}`
-                  : 'Suas campanhas mais recentes'
-              }
+                  : 'Suas campanhas mais recentes'}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {campaigns.map((campaign) => (
-                <div key={campaign.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div
+                  key={campaign.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
                   <div className="space-y-1">
                     <p className="font-medium text-sm">{campaign.name}</p>
                     <div className="flex items-center gap-2">
@@ -329,10 +347,12 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
               ))}
             </div>
             <div className="mt-4 pt-4 border-t">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
-                onClick={() => navigate(effectiveIsPlatformAdmin ? "/campaigns" : buildPath('/campaigns'))}
+                onClick={() =>
+                  navigate(effectiveIsPlatformAdmin ? '/campaigns' : buildPath('/campaigns'))
+                }
               >
                 Ver Todas as Campanhas
               </Button>
@@ -344,9 +364,7 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
         <Card>
           <CardHeader>
             <CardTitle>Ações Rápidas</CardTitle>
-            <CardDescription>
-              Acesse rapidamente as funcionalidades principais
-            </CardDescription>
+            <CardDescription>Acesse rapidamente as funcionalidades principais</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -373,32 +391,32 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
                 </>
               ) : (
                 <>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => navigate(buildPath('/campaigns/new'))}
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     Criar Nova Campanha
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => navigate(buildPath('/responses'))}
                   >
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Ver Respostas NPS
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => navigate(buildPath('/analytics'))}
                   >
                     <BarChart3 className="mr-2 h-4 w-4" />
                     Analytics & Relatórios
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => navigate(buildPath('/team'))}
                   >
@@ -412,5 +430,5 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
         </Card>
       </div>
     </div>
-  );
+  )
 }

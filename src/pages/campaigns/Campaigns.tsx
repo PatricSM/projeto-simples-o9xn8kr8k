@@ -1,123 +1,128 @@
-import { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useHospitalRoute } from '@/hooks/use-hospital-route';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  Eye, 
-  Edit, 
-  Copy, 
+import { useState, useEffect } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useHospitalRoute } from '@/hooks/use-hospital-route'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Copy,
   Trash2,
   Play,
   Pause,
   BarChart3,
   ExternalLink,
-  Share2
-} from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/hooks/use-toast';
-import { useHospitalView } from '@/contexts/HospitalViewContext';
-import CampaignShareModal from '@/components/campaigns/CampaignShareModal';
+  Share2,
+} from 'lucide-react'
+import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/hooks/use-auth'
+import { useToast } from '@/hooks/use-toast'
+import { useHospitalView } from '@/contexts/HospitalViewContext'
+import CampaignShareModal from '@/components/campaigns/CampaignShareModal'
 
 interface Campaign {
-  id: string;
-  name: string;
-  public_title?: string;
-  description: string | null;
-  type: string;
-  status: string;
-  created_at: string;
-  expires_at: string | null;
-  primary_color: string | null;
-  hospital_id: string;
-  created_by: string;
+  id: string
+  name: string
+  public_title?: string
+  description: string | null
+  type: string
+  status: string
+  created_at: string
+  expires_at: string | null
+  primary_color: string | null
+  hospital_id: string
+  created_by: string
   _count?: {
-    responses: number;
-    questions: number;
-  };
+    responses: number
+    questions: number
+  }
 }
 
 export default function Campaigns() {
-  const { profile } = useAuth();
-  const { toast } = useToast();
-  const { hospitalContext } = useHospitalView();
-  const { buildPath } = useHospitalRoute();
-  const navigate = useNavigate();
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const { profile } = useAuth()
+  const { toast } = useToast()
+  const { hospitalContext } = useHospitalView()
+  const { buildPath } = useHospitalRoute()
+  const navigate = useNavigate()
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [shareModalOpen, setShareModalOpen] = useState(false)
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null)
 
   const getHospitalId = () => {
     if (hospitalContext) {
-      return hospitalContext.hospitalId;
+      return hospitalContext.hospitalId
     }
-    return profile?.hospital_id;
-  };
+    return profile?.hospital_id
+  }
 
   const fetchCampaigns = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const hospitalId = getHospitalId();
-      
-      let query = supabase
-        .from('campaigns')
-        .select(`
+      const hospitalId = getHospitalId()
+
+      let query = supabase.from('campaigns').select(`
           *,
           nps_responses!campaign_id(count),
           campaign_questions!campaign_id(count)
-        `);
+        `)
 
       // Filtrar por hospital se não for admin da plataforma visualizando tudo
       if (hospitalId || !profile?.role?.includes('admin_platform')) {
-        query = query.eq('hospital_id', hospitalId);
+        query = query.eq('hospital_id', hospitalId)
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+      const { data, error } = await query.order('created_at', { ascending: false })
 
-      if (error) throw error;
+      if (error) throw error
 
       // Processar contagens
-      const processedCampaigns = data?.map(campaign => ({
-        ...campaign,
-        _count: {
-          responses: campaign.nps_responses?.[0]?.count || 0,
-          questions: campaign.campaign_questions?.[0]?.count || 0,
-        }
-      })) || [];
+      const processedCampaigns =
+        data?.map((campaign) => ({
+          ...campaign,
+          _count: {
+            responses: campaign.nps_responses?.[0]?.count || 0,
+            questions: campaign.campaign_questions?.[0]?.count || 0,
+          },
+        })) || []
 
-      setCampaigns(processedCampaigns);
+      setCampaigns(processedCampaigns)
     } catch (error) {
-      console.error('Erro ao buscar campanhas:', error);
+      console.error('Erro ao buscar campanhas:', error)
       toast({
         title: 'Erro',
         description: 'Erro ao carregar campanhas.',
         variant: 'destructive',
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchCampaigns();
-  }, [profile, hospitalContext]);
+    fetchCampaigns()
+  }, [profile, hospitalContext])
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -126,11 +131,11 @@ export default function Campaigns() {
       paused: { variant: 'outline' as const, label: 'Pausada' },
       completed: { variant: 'secondary' as const, label: 'Finalizada' },
       archived: { variant: 'secondary' as const, label: 'Arquivada' },
-    };
-    
-    const config = variants[status as keyof typeof variants] || variants.draft;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
+    }
+
+    const config = variants[status as keyof typeof variants] || variants.draft
+    return <Badge variant={config.variant}>{config.label}</Badge>
+  }
 
   const getTypeBadge = (type: string) => {
     const labels = {
@@ -139,74 +144,72 @@ export default function Campaigns() {
       whatsapp_batch: 'WhatsApp',
       public_link: 'Link Público',
       integration_flow: 'Integração',
-    };
-    return labels[type as keyof typeof labels] || type;
-  };
+    }
+    return labels[type as keyof typeof labels] || type
+  }
 
   const updateCampaignStatus = async (campaignId: string, newStatus: string) => {
     try {
       const { error } = await supabase
         .from('campaigns')
         .update({ status: newStatus as any })
-        .eq('id', campaignId);
+        .eq('id', campaignId)
 
-      if (error) throw error;
+      if (error) throw error
 
-      setCampaigns(campaigns.map(c => 
-        c.id === campaignId ? { ...c, status: newStatus } : c
-      ));
+      setCampaigns(campaigns.map((c) => (c.id === campaignId ? { ...c, status: newStatus } : c)))
 
       toast({
         title: 'Sucesso!',
         description: `Campanha ${newStatus === 'active' ? 'ativada' : 'pausada'} com sucesso.`,
-      });
+      })
     } catch (error) {
-      console.error('Erro ao atualizar status:', error);
+      console.error('Erro ao atualizar status:', error)
       toast({
         title: 'Erro',
         description: 'Erro ao atualizar status da campanha.',
         variant: 'destructive',
-      });
+      })
     }
-  };
+  }
 
   const deleteCampaign = async (campaignId: string) => {
-    if (!confirm('Tem certeza que deseja excluir esta campanha? Esta ação não pode ser desfeita.')) {
-      return;
+    if (
+      !confirm('Tem certeza que deseja excluir esta campanha? Esta ação não pode ser desfeita.')
+    ) {
+      return
     }
 
     try {
-      const { error } = await supabase
-        .from('campaigns')
-        .delete()
-        .eq('id', campaignId);
+      const { error } = await supabase.from('campaigns').delete().eq('id', campaignId)
 
-      if (error) throw error;
+      if (error) throw error
 
-      setCampaigns(campaigns.filter(c => c.id !== campaignId));
+      setCampaigns(campaigns.filter((c) => c.id !== campaignId))
 
       toast({
         title: 'Sucesso!',
         description: 'Campanha excluída com sucesso.',
-      });
+      })
     } catch (error) {
-      console.error('Erro ao excluir campanha:', error);
+      console.error('Erro ao excluir campanha:', error)
       toast({
         title: 'Erro',
         description: 'Erro ao excluir campanha.',
         variant: 'destructive',
-      });
+      })
     }
-  };
+  }
 
-  const filteredCampaigns = campaigns.filter(campaign => {
-    const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (campaign.public_title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                         campaign.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
+  const filteredCampaigns = campaigns.filter((campaign) => {
+    const matchesSearch =
+      campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (campaign.public_title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      campaign.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = statusFilter === 'all' || campaign.status === statusFilter
+
+    return matchesSearch && matchesStatus
+  })
 
   if (loading) {
     return (
@@ -214,7 +217,7 @@ export default function Campaigns() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
         <p className="mt-2 text-muted-foreground">Carregando campanhas...</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -223,9 +226,7 @@ export default function Campaigns() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Campanhas NPS</h1>
-          <p className="text-muted-foreground">
-            Gerencie suas campanhas de pesquisa de satisfação
-          </p>
+          <p className="text-muted-foreground">Gerencie suas campanhas de pesquisa de satisfação</p>
         </div>
         <Button onClick={() => navigate(buildPath('/campaigns/new'))}>
           <Plus className="mr-2 h-4 w-4" />
@@ -273,10 +274,9 @@ export default function Campaigns() {
               {campaigns.length === 0 ? 'Nenhuma campanha criada' : 'Nenhuma campanha encontrada'}
             </h3>
             <p className="text-muted-foreground mb-4">
-              {campaigns.length === 0 
+              {campaigns.length === 0
                 ? 'Crie sua primeira campanha para começar a coletar feedback dos pacientes.'
-                : 'Tente ajustar os filtros para encontrar as campanhas desejadas.'
-              }
+                : 'Tente ajustar os filtros para encontrar as campanhas desejadas.'}
             </p>
             {campaigns.length === 0 && (
               <Button onClick={() => navigate(buildPath('/campaigns/new'))}>
@@ -336,8 +336,8 @@ export default function Campaigns() {
                         <>
                           <DropdownMenuItem
                             onClick={() => {
-                              setSelectedCampaign(campaign);
-                              setShareModalOpen(true);
+                              setSelectedCampaign(campaign)
+                              setShareModalOpen(true)
                             }}
                           >
                             <Share2 className="mr-2 h-4 w-4" />
@@ -352,10 +352,10 @@ export default function Campaigns() {
                         </>
                       )}
                       <DropdownMenuItem
-                        onClick={() => 
+                        onClick={() =>
                           updateCampaignStatus(
-                            campaign.id, 
-                            campaign.status === 'active' ? 'paused' : 'active'
+                            campaign.id,
+                            campaign.status === 'active' ? 'paused' : 'active',
                           )
                         }
                       >
@@ -401,10 +401,9 @@ export default function Campaigns() {
                   <div>
                     <p className="text-muted-foreground">Expira em</p>
                     <p className="font-medium">
-                      {campaign.expires_at 
+                      {campaign.expires_at
                         ? new Date(campaign.expires_at).toLocaleDateString('pt-BR')
-                        : 'Sem expiração'
-                      }
+                        : 'Sem expiração'}
                     </p>
                   </div>
                 </div>
@@ -413,19 +412,19 @@ export default function Campaigns() {
           ))}
         </div>
       )}
-      
+
       {/* Modal de Compartilhamento */}
       {selectedCampaign && (
         <CampaignShareModal
           isOpen={shareModalOpen}
           onClose={() => {
-            setShareModalOpen(false);
-            setSelectedCampaign(null);
+            setShareModalOpen(false)
+            setSelectedCampaign(null)
           }}
           campaignId={selectedCampaign.id}
           campaignName={selectedCampaign.name}
         />
       )}
     </div>
-  );
+  )
 }

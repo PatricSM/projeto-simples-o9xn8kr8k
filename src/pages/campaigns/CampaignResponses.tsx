@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Download, Search, Eye } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useHospitalRoute } from '@/hooks/use-hospital-route';
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { ArrowLeft, Download, Search, Eye } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { useToast } from '@/hooks/use-toast'
+import { supabase } from '@/integrations/supabase/client'
+import { useHospitalRoute } from '@/hooks/use-hospital-route'
 import {
   Table,
   TableBody,
@@ -15,60 +15,55 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
+} from '@/components/ui/table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface QuestionResponse {
-  id: string;
-  question_id: string;
-  response_value: any;
+  id: string
+  question_id: string
+  response_value: any
   question: {
-    title: string;
-    question_type: string;
-  };
+    title: string
+    question_type: string
+  }
 }
 
 interface NPSResponse {
-  id: string;
-  nps_score: number | null;
-  feedback_text: string | null;
-  created_at: string;
-  respondent_email: string | null;
-  respondent_phone: string | null;
-  additional_data: any;
-  question_responses?: QuestionResponse[];
+  id: string
+  nps_score: number | null
+  feedback_text: string | null
+  created_at: string
+  respondent_email: string | null
+  respondent_phone: string | null
+  additional_data: any
+  question_responses?: QuestionResponse[]
 }
 
 interface Campaign {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
+  id: string
+  name: string
+  type: string
+  status: string
 }
 
 export default function CampaignResponses() {
-  const { campaignId } = useParams<{ campaignId: string }>();
-  const { buildPath, currentHospital } = useHospitalRoute();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const [campaign, setCampaign] = useState<Campaign | null>(null);
-  const [responses, setResponses] = useState<NPSResponse[]>([]);
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedResponse, setSelectedResponse] = useState<NPSResponse | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { campaignId } = useParams<{ campaignId: string }>()
+  const { buildPath, currentHospital } = useHospitalRoute()
+  const navigate = useNavigate()
+  const { toast } = useToast()
+
+  const [campaign, setCampaign] = useState<Campaign | null>(null)
+  const [responses, setResponses] = useState<NPSResponse[]>([])
+  const [questions, setQuestions] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedResponse, setSelectedResponse] = useState<NPSResponse | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!campaignId) return;
+      if (!campaignId) return
 
       try {
         // Buscar dados da campanha
@@ -76,22 +71,22 @@ export default function CampaignResponses() {
           .from('campaigns')
           .select('id, name, type, status')
           .eq('id', campaignId)
-          .single();
+          .single()
 
-        if (campaignError) throw campaignError;
-        setCampaign(campaignData);
+        if (campaignError) throw campaignError
+        setCampaign(campaignData)
 
         // Buscar perguntas da campanha para substituir tags contextuais
         const { data: questionsData, error: questionsError } = await supabase
           .from('campaign_questions')
           .select('*')
           .eq('campaign_id', campaignId)
-          .order('order_index');
+          .order('order_index')
 
         if (questionsError) {
-          console.error('Erro ao carregar perguntas:', questionsError);
+          console.error('Erro ao carregar perguntas:', questionsError)
         } else {
-          setQuestions(questionsData || []);
+          setQuestions(questionsData || [])
         }
 
         // Buscar respostas da campanha com as respostas às perguntas
@@ -110,77 +105,76 @@ export default function CampaignResponses() {
             )
           `)
           .eq('campaign_id', campaignId)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
 
-        if (responsesError) throw responsesError;
-        setResponses(responsesData || []);
-
+        if (responsesError) throw responsesError
+        setResponses(responsesData || [])
       } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error('Erro ao carregar dados:', error)
         toast({
           title: 'Erro',
           description: 'Não foi possível carregar os dados da campanha',
           variant: 'destructive',
-        });
+        })
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchData();
-  }, [campaignId, toast]);
+    fetchData()
+  }, [campaignId, toast])
 
   // Função para substituir tags contextuais por valores reais
   const replaceContextualTags = (text: string, responseData: NPSResponse) => {
     return text.replace(/\{\{VALUE_Q(\d+)\}\}/g, (match, questionNumber) => {
-      const targetOrderIndex = parseInt(questionNumber) - 1;
-      const targetQuestion = questions.find(q => q.order_index === targetOrderIndex);
-      
+      const targetOrderIndex = parseInt(questionNumber) - 1
+      const targetQuestion = questions.find((q) => q.order_index === targetOrderIndex)
+
       if (targetQuestion && responseData.question_responses) {
         const questionResponse = responseData.question_responses.find(
-          (qr: any) => qr.question_id === targetQuestion.id
-        );
-        
+          (qr: any) => qr.question_id === targetQuestion.id,
+        )
+
         if (questionResponse?.response_value) {
-          const value = questionResponse.response_value;
+          const value = questionResponse.response_value
           if (typeof value === 'object') {
-            return JSON.stringify(value);
+            return JSON.stringify(value)
           }
-          return String(value);
+          return String(value)
         }
       }
-      
-      return match;
-    });
-  };
 
-  const filteredResponses = responses.filter(response => {
-    if (!searchTerm) return true;
-    
-    const searchLower = searchTerm.toLowerCase();
+      return match
+    })
+  }
+
+  const filteredResponses = responses.filter((response) => {
+    if (!searchTerm) return true
+
+    const searchLower = searchTerm.toLowerCase()
     return (
       response.feedback_text?.toLowerCase().includes(searchLower) ||
       response.respondent_email?.toLowerCase().includes(searchLower) ||
       response.respondent_phone?.includes(searchTerm)
-    );
-  });
+    )
+  })
 
   const getNPSCategory = (score: number | null) => {
-    if (score === null) return { label: 'N/A', color: 'secondary' };
-    if (score >= 9) return { label: 'Promotor', color: 'success' };
-    if (score >= 7) return { label: 'Neutro', color: 'warning' };
-    return { label: 'Detrator', color: 'destructive' };
-  };
+    if (score === null) return { label: 'N/A', color: 'secondary' }
+    if (score >= 9) return { label: 'Promotor', color: 'success' }
+    if (score >= 7) return { label: 'Neutro', color: 'warning' }
+    return { label: 'Detrator', color: 'destructive' }
+  }
 
   const calculateNPS = () => {
-    const validScores = responses.filter(r => r.nps_score !== null);
-    if (validScores.length === 0) return 0;
+    const validScores = responses.filter((r) => r.nps_score !== null)
+    if (validScores.length === 0) return 0
 
-    const promoters = validScores.filter(r => r.nps_score! >= 9).length;
-    const detractors = validScores.filter(r => r.nps_score! <= 6).length;
-    
-    return Math.round(((promoters - detractors) / validScores.length) * 100);
-  };
+    const promoters = validScores.filter((r) => r.nps_score! >= 9).length
+    const detractors = validScores.filter((r) => r.nps_score! <= 6).length
+
+    return Math.round(((promoters - detractors) / validScores.length) * 100)
+  }
 
   if (loading) {
     return (
@@ -191,17 +185,13 @@ export default function CampaignResponses() {
           <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
-    );
+    )
   }
 
   if (!campaign) {
     return (
       <div className="p-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(buildPath('/campaigns'))}
-          className="mb-4"
-        >
+        <Button variant="ghost" onClick={() => navigate(buildPath('/campaigns'))} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Voltar para Campanhas
         </Button>
@@ -211,7 +201,7 @@ export default function CampaignResponses() {
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
   return (
@@ -219,10 +209,7 @@ export default function CampaignResponses() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(buildPath('/campaigns'))}
-          >
+          <Button variant="ghost" onClick={() => navigate(buildPath('/campaigns'))}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Voltar
           </Button>
@@ -265,7 +252,7 @@ export default function CampaignResponses() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {responses.filter(r => r.nps_score && r.nps_score >= 9).length}
+              {responses.filter((r) => r.nps_score && r.nps_score >= 9).length}
             </div>
           </CardContent>
         </Card>
@@ -276,7 +263,7 @@ export default function CampaignResponses() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              {responses.filter(r => r.nps_score && r.nps_score <= 6).length}
+              {responses.filter((r) => r.nps_score && r.nps_score <= 6).length}
             </div>
           </CardContent>
         </Card>
@@ -301,7 +288,9 @@ export default function CampaignResponses() {
         <CardContent>
           {filteredResponses.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
-              {searchTerm ? 'Nenhuma resposta encontrada para o filtro aplicado' : 'Nenhuma resposta ainda'}
+              {searchTerm
+                ? 'Nenhuma resposta encontrada para o filtro aplicado'
+                : 'Nenhuma resposta ainda'}
             </p>
           ) : (
             <div className="rounded-md border">
@@ -318,7 +307,7 @@ export default function CampaignResponses() {
                 </TableHeader>
                 <TableBody>
                   {filteredResponses.map((response) => {
-                    const npsCategory = getNPSCategory(response.nps_score);
+                    const npsCategory = getNPSCategory(response.nps_score)
                     return (
                       <TableRow key={response.id} className="cursor-pointer hover:bg-muted/50">
                         <TableCell className="font-medium">
@@ -327,14 +316,12 @@ export default function CampaignResponses() {
                             month: '2-digit',
                             year: 'numeric',
                             hour: '2-digit',
-                            minute: '2-digit'
+                            minute: '2-digit',
                           })}
                         </TableCell>
                         <TableCell>
                           {response.nps_score !== null && (
-                            <Badge variant={npsCategory.color as any}>
-                              {npsCategory.label}
-                            </Badge>
+                            <Badge variant={npsCategory.color as any}>{npsCategory.label}</Badge>
                           )}
                         </TableCell>
                         <TableCell>
@@ -347,10 +334,14 @@ export default function CampaignResponses() {
                         <TableCell>
                           <div className="text-sm space-y-1">
                             {response.respondent_email && (
-                              <div className="truncate max-w-[200px]">{response.respondent_email}</div>
+                              <div className="truncate max-w-[200px]">
+                                {response.respondent_email}
+                              </div>
                             )}
                             {response.respondent_phone && (
-                              <div className="text-muted-foreground">{response.respondent_phone}</div>
+                              <div className="text-muted-foreground">
+                                {response.respondent_phone}
+                              </div>
                             )}
                           </div>
                         </TableCell>
@@ -366,8 +357,8 @@ export default function CampaignResponses() {
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setSelectedResponse(response);
-                              setDialogOpen(true);
+                              setSelectedResponse(response)
+                              setDialogOpen(true)
                             }}
                           >
                             <Eye className="h-4 w-4 mr-2" />
@@ -375,7 +366,7 @@ export default function CampaignResponses() {
                           </Button>
                         </TableCell>
                       </TableRow>
-                    );
+                    )
                   })}
                 </TableBody>
               </Table>
@@ -390,7 +381,7 @@ export default function CampaignResponses() {
           <DialogHeader>
             <DialogTitle>Detalhes da Resposta</DialogTitle>
           </DialogHeader>
-          
+
           {selectedResponse && (
             <ScrollArea className="h-full max-h-[60vh] pr-4">
               <div className="space-y-6">
@@ -400,7 +391,10 @@ export default function CampaignResponses() {
                   <div className="flex items-center space-x-3">
                     {selectedResponse.nps_score !== null && (
                       <>
-                        <Badge variant={getNPSCategory(selectedResponse.nps_score).color as any} className="text-base">
+                        <Badge
+                          variant={getNPSCategory(selectedResponse.nps_score).color as any}
+                          className="text-base"
+                        >
                           {getNPSCategory(selectedResponse.nps_score).label}
                         </Badge>
                         <span className="font-mono text-3xl font-bold">
@@ -413,7 +407,9 @@ export default function CampaignResponses() {
 
                 {/* Contact Info */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-sm text-muted-foreground">Informações de Contato</h3>
+                  <h3 className="font-semibold text-sm text-muted-foreground">
+                    Informações de Contato
+                  </h3>
                   <div className="space-y-1 text-sm">
                     {selectedResponse.respondent_email && (
                       <div className="flex items-center space-x-2">
@@ -439,55 +435,66 @@ export default function CampaignResponses() {
                   <div className="space-y-2">
                     <h3 className="font-semibold text-sm text-muted-foreground">Feedback</h3>
                     <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-sm whitespace-pre-wrap">{selectedResponse.feedback_text}</p>
+                      <p className="text-sm whitespace-pre-wrap">
+                        {selectedResponse.feedback_text}
+                      </p>
                     </div>
                   </div>
                 )}
 
                 {/* Question Responses */}
-                {selectedResponse.question_responses && selectedResponse.question_responses.length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-sm text-muted-foreground">Respostas às Perguntas</h3>
-                    <div className="space-y-3">
-                      {selectedResponse.question_responses.map((qr: any) => {
-                        const questionTitle = qr.question?.title || 'Pergunta';
-                        const titleWithValues = replaceContextualTags(questionTitle, selectedResponse);
-                        
-                        return (
-                          <div key={qr.id} className="border rounded-lg p-3 space-y-1">
-                            <p className="font-medium text-sm">{titleWithValues}</p>
-                            <div className="text-sm text-muted-foreground">
-                              {typeof qr.response_value === 'object' ? (
-                                <pre className="text-xs bg-muted/50 p-2 rounded overflow-auto">
-                                  {JSON.stringify(qr.response_value, null, 2)}
-                                </pre>
-                              ) : (
-                                <p>{String(qr.response_value)}</p>
-                              )}
+                {selectedResponse.question_responses &&
+                  selectedResponse.question_responses.length > 0 && (
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-sm text-muted-foreground">
+                        Respostas às Perguntas
+                      </h3>
+                      <div className="space-y-3">
+                        {selectedResponse.question_responses.map((qr: any) => {
+                          const questionTitle = qr.question?.title || 'Pergunta'
+                          const titleWithValues = replaceContextualTags(
+                            questionTitle,
+                            selectedResponse,
+                          )
+
+                          return (
+                            <div key={qr.id} className="border rounded-lg p-3 space-y-1">
+                              <p className="font-medium text-sm">{titleWithValues}</p>
+                              <div className="text-sm text-muted-foreground">
+                                {typeof qr.response_value === 'object' ? (
+                                  <pre className="text-xs bg-muted/50 p-2 rounded overflow-auto">
+                                    {JSON.stringify(qr.response_value, null, 2)}
+                                  </pre>
+                                ) : (
+                                  <p>{String(qr.response_value)}</p>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Additional Data */}
-                {selectedResponse.additional_data && Object.keys(selectedResponse.additional_data).length > 0 && (
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-sm text-muted-foreground">Dados Adicionais</h3>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <pre className="text-xs overflow-auto">
-                        {JSON.stringify(selectedResponse.additional_data, null, 2)}
-                      </pre>
+                {selectedResponse.additional_data &&
+                  Object.keys(selectedResponse.additional_data).length > 0 && (
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-sm text-muted-foreground">
+                        Dados Adicionais
+                      </h3>
+                      <div className="bg-muted/50 rounded-lg p-3">
+                        <pre className="text-xs overflow-auto">
+                          {JSON.stringify(selectedResponse.additional_data, null, 2)}
+                        </pre>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

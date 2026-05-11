@@ -1,16 +1,10 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: '13.0.5'
   }
   public: {
     Tables: {
@@ -59,11 +53,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "campaign_contacts_campaign_id_fkey"
-            columns: ["campaign_id"]
+            foreignKeyName: 'campaign_contacts_campaign_id_fkey'
+            columns: ['campaign_id']
             isOneToOne: false
-            referencedRelation: "campaigns"
-            referencedColumns: ["id"]
+            referencedRelation: 'campaigns'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -76,7 +70,7 @@ export type Database = {
           description: string | null
           id: string
           order_index: number
-          question_type: Database["public"]["Enums"]["question_type"]
+          question_type: Database['public']['Enums']['question_type']
           required: boolean | null
           section_id: string | null
           title: string
@@ -89,7 +83,7 @@ export type Database = {
           description?: string | null
           id?: string
           order_index: number
-          question_type: Database["public"]["Enums"]["question_type"]
+          question_type: Database['public']['Enums']['question_type']
           required?: boolean | null
           section_id?: string | null
           title: string
@@ -102,25 +96,25 @@ export type Database = {
           description?: string | null
           id?: string
           order_index?: number
-          question_type?: Database["public"]["Enums"]["question_type"]
+          question_type?: Database['public']['Enums']['question_type']
           required?: boolean | null
           section_id?: string | null
           title?: string
         }
         Relationships: [
           {
-            foreignKeyName: "campaign_questions_campaign_id_fkey"
-            columns: ["campaign_id"]
+            foreignKeyName: 'campaign_questions_campaign_id_fkey'
+            columns: ['campaign_id']
             isOneToOne: false
-            referencedRelation: "campaigns"
-            referencedColumns: ["id"]
+            referencedRelation: 'campaigns'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "campaign_questions_section_id_fkey"
-            columns: ["section_id"]
+            foreignKeyName: 'campaign_questions_section_id_fkey'
+            columns: ['section_id']
             isOneToOne: false
-            referencedRelation: "campaign_sections"
-            referencedColumns: ["id"]
+            referencedRelation: 'campaign_sections'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -170,9 +164,9 @@ export type Database = {
           public_title: string | null
           public_url: string | null
           qr_code_url: string | null
-          status: Database["public"]["Enums"]["campaign_status"] | null
+          status: Database['public']['Enums']['campaign_status'] | null
           thank_you_message: string | null
-          type: Database["public"]["Enums"]["campaign_type"]
+          type: Database['public']['Enums']['campaign_type']
           updated_at: string
           welcome_message: string | null
         }
@@ -191,9 +185,9 @@ export type Database = {
           public_title?: string | null
           public_url?: string | null
           qr_code_url?: string | null
-          status?: Database["public"]["Enums"]["campaign_status"] | null
+          status?: Database['public']['Enums']['campaign_status'] | null
           thank_you_message?: string | null
-          type: Database["public"]["Enums"]["campaign_type"]
+          type: Database['public']['Enums']['campaign_type']
           updated_at?: string
           welcome_message?: string | null
         }
@@ -212,26 +206,26 @@ export type Database = {
           public_title?: string | null
           public_url?: string | null
           qr_code_url?: string | null
-          status?: Database["public"]["Enums"]["campaign_status"] | null
+          status?: Database['public']['Enums']['campaign_status'] | null
           thank_you_message?: string | null
-          type?: Database["public"]["Enums"]["campaign_type"]
+          type?: Database['public']['Enums']['campaign_type']
           updated_at?: string
           welcome_message?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "campaigns_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'campaigns_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "campaigns_hospital_id_fkey"
-            columns: ["hospital_id"]
+            foreignKeyName: 'campaigns_hospital_id_fkey'
+            columns: ['hospital_id']
             isOneToOne: false
-            referencedRelation: "hospitals"
-            referencedColumns: ["id"]
+            referencedRelation: 'hospitals'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -343,11 +337,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "nps_responses_campaign_id_fkey"
-            columns: ["campaign_id"]
+            foreignKeyName: 'nps_responses_campaign_id_fkey'
+            columns: ['campaign_id']
             isOneToOne: false
-            referencedRelation: "campaigns"
-            referencedColumns: ["id"]
+            referencedRelation: 'campaigns'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -362,7 +356,7 @@ export type Database = {
           id: string
           last_name: string
           phone: string | null
-          role: Database["public"]["Enums"]["user_role"]
+          role: Database['public']['Enums']['user_role']
           updated_at: string
           user_id: string
         }
@@ -376,7 +370,7 @@ export type Database = {
           id?: string
           last_name: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
+          role?: Database['public']['Enums']['user_role']
           updated_at?: string
           user_id: string
         }
@@ -390,17 +384,17 @@ export type Database = {
           id?: string
           last_name?: string
           phone?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
+          role?: Database['public']['Enums']['user_role']
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "profiles_hospital_id_fkey"
-            columns: ["hospital_id"]
+            foreignKeyName: 'profiles_hospital_id_fkey'
+            columns: ['hospital_id']
             isOneToOne: false
-            referencedRelation: "hospitals"
-            referencedColumns: ["id"]
+            referencedRelation: 'hospitals'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -428,18 +422,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "question_responses_nps_response_id_fkey"
-            columns: ["nps_response_id"]
+            foreignKeyName: 'question_responses_nps_response_id_fkey'
+            columns: ['nps_response_id']
             isOneToOne: false
-            referencedRelation: "nps_responses"
-            referencedColumns: ["id"]
+            referencedRelation: 'nps_responses'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "question_responses_question_id_fkey"
-            columns: ["question_id"]
+            foreignKeyName: 'question_responses_question_id_fkey'
+            columns: ['question_id']
             isOneToOne: false
-            referencedRelation: "campaign_questions"
-            referencedColumns: ["id"]
+            referencedRelation: 'campaign_questions'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -451,7 +445,7 @@ export type Database = {
       get_user_hospital: { Args: never; Returns: string }
       get_user_role: {
         Args: { user_uuid: string }
-        Returns: Database["public"]["Enums"]["user_role"]
+        Returns: Database['public']['Enums']['user_role']
       }
       insert_public_nps_response: {
         Args: { p_campaign_id: string; p_id: string; p_nps_score: number }
@@ -464,25 +458,21 @@ export type Database = {
       is_platform_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      campaign_status: "draft" | "active" | "paused" | "completed" | "archived"
+      campaign_status: 'draft' | 'active' | 'paused' | 'completed' | 'archived'
       campaign_type:
-        | "public_link"
-        | "email_batch"
-        | "sms_batch"
-        | "whatsapp_batch"
-        | "integration_flow"
+        | 'public_link'
+        | 'email_batch'
+        | 'sms_batch'
+        | 'whatsapp_batch'
+        | 'integration_flow'
       question_type:
-        | "nps_scale"
-        | "text"
-        | "multiple_choice"
-        | "rating"
-        | "contact_points"
-        | "problems"
-      user_role:
-        | "admin_platform"
-        | "admin_hospital"
-        | "user_hospital"
-        | "viewer"
+        | 'nps_scale'
+        | 'text'
+        | 'multiple_choice'
+        | 'rating'
+        | 'contact_points'
+        | 'problems'
+      user_role: 'admin_platform' | 'admin_hospital' | 'user_hospital' | 'viewer'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -490,33 +480,31 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -525,23 +513,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -550,23 +538,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -575,63 +563,58 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
   public: {
     Enums: {
-      campaign_status: ["draft", "active", "paused", "completed", "archived"],
+      campaign_status: ['draft', 'active', 'paused', 'completed', 'archived'],
       campaign_type: [
-        "public_link",
-        "email_batch",
-        "sms_batch",
-        "whatsapp_batch",
-        "integration_flow",
+        'public_link',
+        'email_batch',
+        'sms_batch',
+        'whatsapp_batch',
+        'integration_flow',
       ],
       question_type: [
-        "nps_scale",
-        "text",
-        "multiple_choice",
-        "rating",
-        "contact_points",
-        "problems",
+        'nps_scale',
+        'text',
+        'multiple_choice',
+        'rating',
+        'contact_points',
+        'problems',
       ],
-      user_role: [
-        "admin_platform",
-        "admin_hospital",
-        "user_hospital",
-        "viewer",
-      ],
+      user_role: ['admin_platform', 'admin_hospital', 'user_hospital', 'viewer'],
     },
   },
 } as const
