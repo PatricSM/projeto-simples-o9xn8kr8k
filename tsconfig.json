@@ -1,18 +1,24 @@
-/* Typescript config for the project: https://www.typescriptlang.org/tsconfig/ */
 {
+  "compilerOptions": {
+    "allowJs": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "skipLibCheck": true,
+    "strictNullChecks": false
+  },
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
+    {
+      "path": "./tsconfig.app.json"
     },
-    "noImplicitAny": false,
-    "noUnusedParameters": false,
-    "allowJs": true,
-    "strictNullChecks": true,
-    "skipLibCheck": true
-  }
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

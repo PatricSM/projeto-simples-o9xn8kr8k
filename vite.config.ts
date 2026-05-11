@@ -1,43 +1,22 @@
-/* Vite config for building the frontend react app: https://vite.dev/config/ */
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-// @ts-expect-error - uidPlugin is a custom plugin
-import uidPlugin from './vite-plugin-react-uid'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
+import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  preview: {
+    allowedHosts: ['hdata-nps-980991464077.us-central1.run.app',
+    		   'nps.eximio.med.br']
+  },
   server: {
-    host: '::',
+    host: "::",
     port: 8080,
   },
-  build: {
-    outDir: mode === 'development' ? 'dev-dist' : 'dist',
-    minify: mode !== 'development',
-    sourcemap: mode === 'development',
-    rolldownOptions: {
-      onwarn(warning, warn) {
-        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
-          return
-        }
-        warn(warning)
-      },
+  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-  plugins: [mode === 'development' ? uidPlugin() : undefined, react()].filter(Boolean),
-  define: {
-    'process.env.NODE_ENV': JSON.stringify(mode ?? process.env.NODE_ENV ?? 'production'),
-  },
-  resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: path.resolve(__dirname, './src'),
-      },
-      {
-        find: /zod\/v4\/core/,
-        replacement: path.resolve(__dirname, 'node_modules', 'zod', 'v4', 'core'),
-      }
-    ],
-  },
-}))
+}));
