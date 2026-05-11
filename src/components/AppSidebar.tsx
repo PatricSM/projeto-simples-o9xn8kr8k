@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
-import { useHospitalRoute } from '@/hooks/useHospitalRoute';
+import { useHospitalRoute } from '@/hooks/use-hospital-route';
 import {
   Sidebar,
   SidebarContent,

@@ -122,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro durante o cadastro. Tente novamente.",
@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro durante o login. Tente novamente.",
@@ -194,7 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro. Tente novamente.",

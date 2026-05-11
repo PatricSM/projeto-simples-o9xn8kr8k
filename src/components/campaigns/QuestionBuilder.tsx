@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Trash2, GripVertical, Plus, X, GitBranch } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import ConditionalLogic from './ConditionalLogic';
-import ContextualTags from './ContextualTags';
+import ConditionalLogic from "@/components/campaigns/ConditionalLogic";
+import ContextualTags from "@/components/campaigns/ContextualTags";
 import { NPS_COLOR_PROFILE_OPTIONS } from '@/lib/nps-color-profiles';
 
 export interface Question {

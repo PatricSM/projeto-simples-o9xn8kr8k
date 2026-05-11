@@ -8,14 +8,14 @@ import { HospitalViewProvider } from "@/contexts/HospitalViewContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
 import ViewToggle from "@/components/ViewToggle";
-import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import Hospitals from "./pages/admin/Hospitals";
-import Users from "./pages/admin/Users";
-import PublicSurvey from "./pages/survey/PublicSurvey";
-import HospitalRoutes from "./components/HospitalRoutes";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
+import Dashboard from "@/pages/Dashboard";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import Hospitals from "@/pages/admin/Hospitals";
+import Users from "@/pages/admin/Users";
+import PublicSurvey from "@/pages/survey/PublicSurvey";
+import HospitalRoutes from "@/components/HospitalRoutes";
+import Auth from "@/pages/Auth";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 

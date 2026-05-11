@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, TrendingUp, Users, MessageSquare, Building2, Plus } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useHospitalRoute } from '@/hooks/useHospitalRoute';
+import { useHospitalRoute } from '@/hooks/use-hospital-route';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -270,6 +270,7 @@ export default function Dashboard({ hospitalId, hospitalName }: DashboardProps) 
       </div>
 
       {/* Stats Cards */}
+      {loading && <div className="text-sm text-muted-foreground animate-pulse mb-4">Atualizando dados...</div>}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.title} className="hover:shadow-md transition-shadow">

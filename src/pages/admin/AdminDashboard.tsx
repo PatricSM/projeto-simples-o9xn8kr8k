@@ -66,7 +66,7 @@ export default function AdminDashboard() {
           totalUsers: usersCount || 0,
         });
 
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Error fetching dashboard stats:', error);
         toast({
           title: "Erro ao carregar estatísticas",

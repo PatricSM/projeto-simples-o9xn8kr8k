@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useHospitalRoute } from '@/hooks/useHospitalRoute';
+import { useHospitalRoute } from '@/hooks/use-hospital-route';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -422,7 +422,7 @@ export default function NewCampaign() {
             primary_color: data.primary_color || '#3B82F6',
             expires_at: data.expires_at ? new Date(data.expires_at).toISOString() : null,
             hospital_id: hospitalId,
-            created_by: profile?.id!,
+            created_by: profile?.id as string,
             status: 'draft' as any,
             banner_url: bannerConfig.banner_url || null,
             banner_config: {
@@ -701,12 +701,11 @@ export default function NewCampaign() {
         const { data: latestDraft } = await supabase
           .from('campaigns')
           .select('id')
-          .eq('created_by', profile?.id!)
+          .eq('created_by', profile?.id as string)
           .eq('status', 'draft')
           .order('created_at', { ascending: false })
           .limit(1)
-          .single();
-          
+          .single();          
         if (latestDraft) {
           activeCampaignId = latestDraft.id;
         }
@@ -740,12 +739,14 @@ export default function NewCampaign() {
       });
 
       navigate(buildPath('/campaigns'));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao publicar campanha:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao publicar campanha. Tente novamente.';
       
       toast({
         title: 'Erro',
-        description: error.message || 'Erro ao publicar campanha. Tente novamente.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
