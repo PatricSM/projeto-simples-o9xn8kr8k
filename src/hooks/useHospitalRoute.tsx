@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from './useAuth';
+import { useAuth } from './use-auth';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Hospital {

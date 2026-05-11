@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useHospitalRoute } from '@/hooks/useHospitalRoute';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { HospitalViewProvider } from '@/contexts/HospitalViewContext';
 import Layout from '@/components/Layout';
 import Dashboard from '@/pages/Dashboard';

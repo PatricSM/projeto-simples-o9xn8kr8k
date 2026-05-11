@@ -28,7 +28,7 @@ import {
   Share2
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useHospitalView } from '@/contexts/HospitalViewContext';
 import CampaignShareModal from '@/components/campaigns/CampaignShareModal';
